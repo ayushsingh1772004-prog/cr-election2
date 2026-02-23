@@ -220,7 +220,7 @@ async function verifyIdentity() {
     if(byRoll) document.getElementById('err-name').textContent=`Roll ${rollVal} belongs to "${byRoll.name}" — check spelling`;
     else document.getElementById('err-name').textContent='Student not found in Section '+currentSection+'. Check details.';
     document.getElementById('inp-name').classList.add('err');
-    await logEvent('FAILED_IDENTITY',`Name:${nameVal} Roll:${rollVal} Section:${currentSection}`,'⚠️');
+    await logEvent('FAILED_IDENTITY',`Failed identity check — Section ${currentSection}`,'⚠️');
     return;
   }
 
@@ -235,12 +235,12 @@ async function verifyIdentity() {
   const checkResult = await apiGet('/api/votes/check/' + student.roll);
   if(checkResult && checkResult.voted) {
     document.getElementById('err-roll').textContent='⛔ This student has already voted.';
-    await logFraud('DUPLICATE_VOTE_ATTEMPT',student.name,student.roll,currentSection,'Identity step');
+    await logFraud('DUPLICATE_VOTE_ATTEMPT','[hidden]','[hidden]',currentSection,'Identity step');
     return;
   }
 
   currentStudent = {...student, section: currentSection};
-  await logEvent('IDENTITY_VERIFIED',`${student.name} (${student.roll}) — Section ${currentSection}`,'✅');
+  await logEvent('IDENTITY_VERIFIED',`Voter verified — Section ${currentSection}`,'✅');
   goToStep(3);
   startCamera();
 }
@@ -392,7 +392,7 @@ async function processFace() {
     sb.className='status error';
     sb.innerHTML='❌ No face detected in the photo. Retake — ensure your face is clearly visible and well-lit.';
     document.getElementById('cam-overlay').innerHTML='<div class="tick-overlay"><div class="tick-circle" style="background:var(--error)">❌</div></div>';
-    await logEvent('FACE_NOT_DETECTED',`${currentStudent.name} — no face found`,'⚠️');
+    await logEvent('FACE_NOT_DETECTED',`No face found in capture`,'⚠️');
     return;
   }
   if(detections.length>1){
@@ -423,8 +423,8 @@ async function processFace() {
       sb.className='status error';
       sb.innerHTML=`⛔ This face is already registered to another student (Roll: ${dupRoll}).`;
       document.getElementById('cam-overlay').innerHTML='<div class="tick-overlay"><div class="tick-circle" style="background:var(--error)">⛔</div></div>';
-      await logFraud('FACE_DUPLICATE',currentStudent.name,currentStudent.roll,currentStudent.section,
-        `Matched roll ${dupRoll} (distance: ${closestDist.toFixed(3)})`);
+      await logFraud('FACE_DUPLICATE','[hidden]','[hidden]',currentStudent.section,
+        `Matched roll [hidden] (distance: ${closestDist.toFixed(3)})`);
       return;
     }
 
@@ -436,7 +436,7 @@ async function processFace() {
   sb.innerHTML=`✅ Face verified — <strong>${currentStudent.name}</strong> · Confidence: ${confidence}% · No duplicates found.`;
   document.getElementById('cam-hint').textContent='✓ Face verified';
   document.getElementById('proceed-face-btn').style.display='block';
-  await logEvent('FACE_VERIFIED',`${currentStudent.name} (${currentStudent.roll}) — confidence ${confidence}%`,'🤖');
+  await logEvent('FACE_VERIFIED',`Face verified — confidence ${confidence}% · No duplicates found`,'🤖');
 }
 
 function loadImageFromDataUrl(dataUrl){
