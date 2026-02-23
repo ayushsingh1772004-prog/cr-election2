@@ -498,7 +498,7 @@ async function submitVote(){
     return;
   }
 
-  await logEvent('VOTE_CAST',`${currentStudent.name} → ${cand.name} (Section ${currentSection})`,'🗳️');
+  await logEvent('VOTE_CAST',`Anonymous → ${cand.name} (Section ${currentSection})`,'🗳️');
   showReceipt(vote);
   goToStep(5);
 }
