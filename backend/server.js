@@ -18,7 +18,10 @@ const FILES = {
   candidates: path.join(DATA_DIR, 'candidates.json'),
 };
 
-// ── Ensure data files exist ──
+// ── Ensure data directory AND files exist ──
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
 Object.values(FILES).forEach(f => {
   if (!fs.existsSync(f)) {
     fs.writeFileSync(f, JSON.stringify([]));
