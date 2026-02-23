@@ -148,7 +148,7 @@ const DEFAULT_SETTINGS = {
   sessionTimeout: true,
   privacyNotice: true,
   autoDeleteFaces: true,
-  adminPass: '-2117520901', // hash of 'admin2025'
+  adminPass: '13d38d0', // hash of 'admin2025'
   schedStart: '',
   schedEnd: ''
 };
