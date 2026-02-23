@@ -752,8 +752,7 @@ async function renderResults(){
   const table=document.getElementById('votes-table');
   if(!votes.length){table.innerHTML='<div class="table-empty">No votes cast yet</div>';return;}
   table.innerHTML=votes.slice().reverse().map(v=>`
-    <div class="table-row" style="grid-template-columns:1fr 1fr 1fr auto;">
-      <div>${v.name}</div>
+    <div class="table-row" style="grid-template-columns:1fr 1fr auto;">
       <div><span class="pill ${v.section.toLowerCase()}">${v.section}</span></div>
       <div>${v.candidateName}</div>
       <div style="color:var(--muted);font-size:0.68rem;">${new Date(v.timestamp).toLocaleTimeString()}</div>
@@ -920,8 +919,8 @@ async function exportCSV(type){
   const fraud=await apiGet('/api/fraud')||[];
   const logs=await apiGet('/api/logs')||[];
   if(type==='full'){
-    header='Vote ID,Name,Roll,Section,Candidate,Timestamp\n';
-    rows=votes.map(v=>`${v.voteId},${v.name},${v.roll},${v.section},${v.candidateName},${v.timestamp}`);
+    header='Vote ID,Section,Candidate,Timestamp\n';
+    rows=votes.map(v=>`${v.voteId},${v.section},${v.candidateName},${v.timestamp}`);
   } else if(type==='fraud'){
     header='Type,Name,Roll,Section,Detail,Timestamp\n';
     rows=fraud.map(f=>`${f.type},${f.name},${f.roll},${f.section||''},${f.detail},${f.timestamp}`);
