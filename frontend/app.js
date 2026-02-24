@@ -372,97 +372,76 @@ async function startCamera(){
   }
 }
 
-// Eye Aspect Ratio — measures how open the eye is
-// landmarks[36–41] = left eye, [42–47] = right eye
-function eyeAspectRatio(eye){
-  const dist=(p1,p2)=>Math.sqrt((p1.x-p2.x)**2+(p1.y-p2.y)**2);
-  const A=dist(eye[1],eye[5]);
-  const B=dist(eye[2],eye[4]);
-  const C=dist(eye[0],eye[3]);
-  return (A+B)/(2*C);
-}
-
-const BLINK_THRESHOLD=0.22; // EAR below this = eyes closed
+// ── Simple Head-Turn Liveness ──
+// Ask user to look left then right using nose landmark offset.
+// Impossible to spoof with a static photo.
+let livenessState = {step:'center', leftDone:false, rightDone:false, frames:0};
+const TURN_RATIO = 0.12;
 
 function startBlinkLivenessLoop(){
   if(liveDetectionLoop) return;
-  const video=document.getElementById('video');
+  const video = document.getElementById('video');
+  livenessState = {step:'center', leftDone:false, rightDone:false, frames:0};
+  blinkState = {completed:false};
 
-  // Reset blink state
-  blinkState={required:true,completed:false,eyesWereClosed:false,blinkCount:0,requiredBlinks:2};
+  const challengeEl = document.getElementById('liveness-challenge');
+  challengeEl.style.display = 'flex';
+  challengeEl.innerHTML = '👤 Liveness Check: Look straight at the camera';
 
-  const challengeEl=document.getElementById('liveness-challenge');
-  challengeEl.style.display='flex';
-  challengeEl.innerHTML=`👁️ Liveness Check: Please <strong>blink ${blinkState.requiredBlinks} times</strong> naturally`;
-
-  let liveCanvas=document.getElementById('live-detect-canvas');
+  let liveCanvas = document.getElementById('live-detect-canvas');
   if(!liveCanvas){
-    liveCanvas=document.createElement('canvas');
-    liveCanvas.id='live-detect-canvas';
-    liveCanvas.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
+    liveCanvas = document.createElement('canvas');
+    liveCanvas.id = 'live-detect-canvas';
+    liveCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
     document.getElementById('cam-wrap').appendChild(liveCanvas);
   }
 
-  liveDetectionLoop=setInterval(async()=>{
+  liveDetectionLoop = setInterval(async()=>{
     if(!videoStream||!video.srcObject){stopLiveDetection();return;}
-    if(video.readyState<2) return;
+    if(video.readyState < 2 || blinkState.completed) return;
 
-    const detection=await faceapi
-      .detectSingleFace(video,new faceapi.SsdMobilenetv1Options({minConfidence:0.5}))
-      .withFaceLandmarks()
-      .withFaceDescriptors();
+    const detection = await faceapi
+      .detectSingleFace(video, new faceapi.SsdMobilenetv1Options({minConfidence:0.5}))
+      .withFaceLandmarks().withFaceDescriptors();
 
-    liveCanvas.width=video.videoWidth;
-    liveCanvas.height=video.videoHeight;
-    const ctx=liveCanvas.getContext('2d');
+    liveCanvas.width = video.videoWidth;
+    liveCanvas.height = video.videoHeight;
+    const ctx = liveCanvas.getContext('2d');
     ctx.clearRect(0,0,liveCanvas.width,liveCanvas.height);
 
-    if(!detection){
-      document.getElementById('cam-hint').textContent='No face detected — move closer';
-      return;
-    }
+    if(!detection){ document.getElementById('cam-hint').textContent='No face — move closer'; return; }
 
-    // Draw face box
-    const box=detection.detection.box;
-    const mx=liveCanvas.width-box.x-box.width;
-    ctx.strokeStyle=blinkState.completed?'#00e5a0':'#7c6bff';
-    ctx.lineWidth=2.5;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=12;
-    ctx.strokeRect(mx,box.y,box.width,box.height);
+    const W = liveCanvas.width;
+    const box = detection.detection.box;
+    const pts = detection.landmarks.positions;
+    const noseX = W - pts[30].x;
+    const faceCX = W - box.x - box.width/2;
+    const offset = (noseX - faceCX) / box.width;
 
-    // Get eye landmarks (mirrored)
-    const pts=detection.landmarks.positions;
-    const leftEye=[pts[36],pts[37],pts[38],pts[39],pts[40],pts[41]].map(p=>({x:liveCanvas.width-p.x,y:p.y}));
-    const rightEye=[pts[42],pts[43],pts[44],pts[45],pts[46],pts[47]].map(p=>({x:liveCanvas.width-p.x,y:p.y}));
-    const ear=(eyeAspectRatio(leftEye)+eyeAspectRatio(rightEye))/2;
+    const mx = W - box.x - box.width;
+    const done = livenessState.leftDone && livenessState.rightDone;
+    ctx.strokeStyle = done ? '#00e5a0' : '#7c6bff';
+    ctx.lineWidth=2.5; ctx.shadowColor=ctx.strokeStyle; ctx.shadowBlur=10;
+    ctx.strokeRect(mx, box.y, box.width, box.height);
 
-    // Blink logic
-    if(!blinkState.completed){
-      if(ear<BLINK_THRESHOLD && !blinkState.eyesWereClosed){
-        blinkState.eyesWereClosed=true; // eyes just closed
-      } else if(ear>=BLINK_THRESHOLD && blinkState.eyesWereClosed){
-        blinkState.eyesWereClosed=false; // eyes just opened = 1 blink
-        blinkState.blinkCount++;
-        const remaining=blinkState.requiredBlinks-blinkState.blinkCount;
-        if(remaining>0){
-          document.getElementById('liveness-challenge').innerHTML=
-            `👁️ Good! <strong>${remaining} more blink${remaining>1?'s':''}</strong> to go...`;
-        }
-        if(blinkState.blinkCount>=blinkState.requiredBlinks){
-          blinkState.completed=true;
-          document.getElementById('liveness-challenge').innerHTML='✅ Liveness confirmed! Processing face...';
-          document.getElementById('cam-hint').textContent='✓ Blink detected — capturing...';
-          stopLiveDetection();
-          await captureAndProcess(detection);
-        }
+    const ch = document.getElementById('liveness-challenge');
+
+    if(livenessState.step==='center'){
+      livenessState.frames++;
+      ch.innerHTML = `👤 Hold still... (${Math.max(0,6-livenessState.frames)} sec)`;
+      if(livenessState.frames > 6){ livenessState.step='left'; ch.innerHTML='⬅️ Now turn your head to the <strong>LEFT</strong>'; }
+    } else if(livenessState.step==='left'){
+      if(offset > TURN_RATIO){ livenessState.leftDone=true; livenessState.step='right'; ch.innerHTML='➡️ Now turn your head to the <strong>RIGHT</strong>'; }
+    } else if(livenessState.step==='right'){
+      if(offset < -TURN_RATIO){
+        livenessState.rightDone=true; blinkState.completed=true;
+        ch.innerHTML='✅ Liveness confirmed!';
+        document.getElementById('cam-hint').textContent='✓ Live person detected';
+        stopLiveDetection();
+        await captureAndProcess(detection);
       }
     }
-
-    // Draw EAR indicator
-    ctx.fillStyle=ear<BLINK_THRESHOLD?'#ff5f7e':'#00e5a0';
-    ctx.font='bold 10px monospace';ctx.shadowBlur=0;
-    ctx.fillText(`BLINK: ${blinkState.blinkCount}/${blinkState.requiredBlinks}`,mx,box.y>18?box.y-5:box.y+14);
-
-  },120); // 120ms interval — fast enough for blink detection
+  }, 150);
 }
 
 // Called automatically after blink challenge passes
