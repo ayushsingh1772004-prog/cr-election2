@@ -372,21 +372,22 @@ async function startCamera(){
   }
 }
 
-// ── Simple Head-Turn Liveness ──
-// Ask user to look left then right using nose landmark offset.
-// Impossible to spoof with a static photo.
-let livenessState = {step:'center', leftDone:false, rightDone:false, frames:0};
-const TURN_RATIO = 0.12;
+// ── Movement-Based Liveness ──
+// Tracks face center movement over time. A static photo won't move.
+// No landmarks, no EAR, no head turns — just raw face box movement.
+let livenessState = {positions:[], passed:false, frames:0};
+const MOVE_THRESHOLD = 8;   // pixels the face must move total
+const REQUIRED_FRAMES = 40; // ~6 seconds of detection
 
 function startBlinkLivenessLoop(){
   if(liveDetectionLoop) return;
   const video = document.getElementById('video');
-  livenessState = {step:'center', leftDone:false, rightDone:false, frames:0};
+  livenessState = {positions:[], passed:false, frames:0};
   blinkState = {completed:false};
 
   const challengeEl = document.getElementById('liveness-challenge');
   challengeEl.style.display = 'flex';
-  challengeEl.innerHTML = '👤 Liveness Check: Look straight at the camera';
+  challengeEl.innerHTML = '👤 Liveness Check: <strong>Slowly nod your head yes</strong>';
 
   let liveCanvas = document.getElementById('live-detect-canvas');
   if(!liveCanvas){
@@ -411,35 +412,41 @@ function startBlinkLivenessLoop(){
 
     if(!detection){ document.getElementById('cam-hint').textContent='No face — move closer'; return; }
 
-    const W = liveCanvas.width;
+    livenessState.frames++;
     const box = detection.detection.box;
-    const pts = detection.landmarks.positions;
-    const noseX = W - pts[30].x;
-    const faceCX = W - box.x - box.width/2;
-    const offset = (noseX - faceCX) / box.width;
+    const cx = box.x + box.width/2;
+    const cy = box.y + box.height/2;
+    livenessState.positions.push({x:cx, y:cy});
+    if(livenessState.positions.length > 20) livenessState.positions.shift();
 
+    // Calculate total movement range
+    const xs = livenessState.positions.map(p=>p.x);
+    const ys = livenessState.positions.map(p=>p.y);
+    const rangeX = Math.max(...xs) - Math.min(...xs);
+    const rangeY = Math.max(...ys) - Math.min(...ys);
+    const movement = Math.max(rangeX, rangeY);
+
+    // Draw face box
+    const W = liveCanvas.width;
     const mx = W - box.x - box.width;
-    const done = livenessState.leftDone && livenessState.rightDone;
-    ctx.strokeStyle = done ? '#00e5a0' : '#7c6bff';
+    const pct = Math.min(100, Math.round(movement / MOVE_THRESHOLD * 100));
+    ctx.strokeStyle = movement >= MOVE_THRESHOLD ? '#00e5a0' : '#7c6bff';
     ctx.lineWidth=2.5; ctx.shadowColor=ctx.strokeStyle; ctx.shadowBlur=10;
     ctx.strokeRect(mx, box.y, box.width, box.height);
 
+    // Progress bar
     const ch = document.getElementById('liveness-challenge');
+    const bar = '#'.repeat(Math.floor(pct/10)) + '░'.repeat(10-Math.floor(pct/10));
+    ch.innerHTML = movement >= MOVE_THRESHOLD
+      ? '✅ Movement detected! Hold still...'
+      : `👤 Nod or move slightly: [${bar}] ${pct}%`;
 
-    if(livenessState.step==='center'){
-      livenessState.frames++;
-      ch.innerHTML = `👤 Hold still... (${Math.max(0,6-livenessState.frames)} sec)`;
-      if(livenessState.frames > 6){ livenessState.step='left'; ch.innerHTML='⬅️ Now turn your head to the <strong>LEFT</strong>'; }
-    } else if(livenessState.step==='left'){
-      if(offset > TURN_RATIO){ livenessState.leftDone=true; livenessState.step='right'; ch.innerHTML='➡️ Now turn your head to the <strong>RIGHT</strong>'; }
-    } else if(livenessState.step==='right'){
-      if(offset < -TURN_RATIO){
-        livenessState.rightDone=true; blinkState.completed=true;
-        ch.innerHTML='✅ Liveness confirmed!';
-        document.getElementById('cam-hint').textContent='✓ Live person detected';
-        stopLiveDetection();
-        await captureAndProcess(detection);
-      }
+    if(movement >= MOVE_THRESHOLD && livenessState.frames >= 15){
+      blinkState.completed = true;
+      ch.innerHTML = '✅ Liveness confirmed!';
+      document.getElementById('cam-hint').textContent = '✓ Live person detected';
+      stopLiveDetection();
+      await captureAndProcess(detection);
     }
   }, 150);
 }
