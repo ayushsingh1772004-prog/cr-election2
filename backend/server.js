@@ -6,7 +6,10 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ── Paths to JSON data files ──
+const TWILIO_ACCOUNT_SID   = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN    = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_WHATSAPP_FROM = process.env.TWILIO_WHATSAPP_FROM || 'whatsapp:+14155238886';
+
 const DATA_DIR = path.join(__dirname, 'data');
 const FILES = {
   votes:      path.join(DATA_DIR, 'votes.json'),
@@ -18,201 +21,129 @@ const FILES = {
   candidates: path.join(DATA_DIR, 'candidates.json'),
 };
 
-// ── Ensure data directory AND files exist ──
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-Object.values(FILES).forEach(f => {
-  if (!fs.existsSync(f)) {
-    fs.writeFileSync(f, JSON.stringify([]));
-  }
-});
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+Object.values(FILES).forEach(f => { if (!fs.existsSync(f)) fs.writeFileSync(f, '[]'); });
 
-// ── Helpers ──
-function readJSON(file) {
-  try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
-  catch { return []; }
-}
-function writeJSON(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2));
-}
+const otpStore = {};
 
-// ── Middleware ──
+function readJSON(file) { try { return JSON.parse(fs.readFileSync(file,'utf8')); } catch { return []; } }
+function writeJSON(file, data) { fs.writeFileSync(file, JSON.stringify(data, null, 2)); }
+function generateOTP() { return String(Math.floor(100000 + Math.random() * 900000)); }
+function normalizePhone(p) { return p.replace(/[\s\-().]/g,''); }
+
 app.use(cors());
-app.use(express.json({ limit: '2mb' })); // 2MB to allow face image data
+app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-// ══════════════════════════════════════════
-//  VOTES
-// ══════════════════════════════════════════
+// ── OTP ──
+app.post('/api/otp/send', async (req, res) => {
+  const { phone } = req.body;
+  if (!phone) return res.status(400).json({ error: 'Phone required' });
+  const otp = generateOTP();
+  const key = normalizePhone(phone);
+  otpStore[key] = { otp, expiresAt: Date.now() + 5*60*1000 };
 
-// Get all votes
-app.get('/api/votes', (req, res) => {
-  res.json(readJSON(FILES.votes));
+  if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN) {
+    console.log(`[DEV] OTP for ${phone}: ${otp}`);
+    return res.json({ success: true, dev: true, otp });
+  }
+  try {
+    const twilio = require('twilio')(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+    const to = key.startsWith('+') ? `whatsapp:${key}` : `whatsapp:+91${key}`;
+    await twilio.messages.create({
+      from: TWILIO_WHATSAPP_FROM, to,
+      body: `CR Election 2025\n\nYour OTP is: *${otp}*\n\nValid for 5 minutes. Do not share.`
+    });
+    res.json({ success: true });
+  } catch(e) {
+    console.error('Twilio error:', e.message);
+    res.status(500).json({ error: 'Failed to send OTP: ' + e.message });
+  }
 });
 
-// Cast a vote
+app.post('/api/otp/verify', (req, res) => {
+  const { phone, otp } = req.body;
+  if (!phone || !otp) return res.status(400).json({ error: 'Missing fields' });
+  const key = normalizePhone(phone);
+  const record = otpStore[key];
+  if (!record) return res.status(400).json({ error: 'No OTP sent to this number' });
+  if (Date.now() > record.expiresAt) { delete otpStore[key]; return res.status(400).json({ error: 'OTP expired' }); }
+  if (record.otp !== String(otp)) return res.status(400).json({ error: 'Incorrect OTP' });
+  delete otpStore[key];
+  res.json({ success: true });
+});
+
+// ── VOTES ──
+app.get('/api/votes', (req, res) => res.json(readJSON(FILES.votes)));
+
 app.post('/api/votes', (req, res) => {
   const votes = readJSON(FILES.votes);
-  const { roll, voteId, name, section, candidateId, candidateName, timestamp } = req.body;
-
-  if (!roll || !candidateId) return res.status(400).json({ error: 'Missing fields' });
-
-  // Prevent duplicate votes
-  if (votes.find(v => v.roll === roll)) {
-    return res.status(409).json({ error: 'Already voted' });
-  }
-
-  const vote = { voteId, name, roll, section, candidateId, candidateName, timestamp };
-  votes.push(vote);
+  const { phone, voteId, name, section, candidateId, candidateName, timestamp } = req.body;
+  if (!phone || !candidateId) return res.status(400).json({ error: 'Missing fields' });
+  if (votes.find(v => normalizePhone(v.phone) === normalizePhone(phone))) return res.status(409).json({ error: 'Already voted' });
+  votes.push({ voteId, name, phone, section, candidateId, candidateName, timestamp });
   writeJSON(FILES.votes, votes);
-  res.json({ success: true, vote });
+  res.json({ success: true });
 });
 
-// Check if a roll number has already voted
-app.get('/api/votes/check/:roll', (req, res) => {
+app.get('/api/votes/check/:phone', (req, res) => {
   const votes = readJSON(FILES.votes);
-  const voted = votes.some(v => v.roll === req.params.roll);
+  const voted = votes.some(v => normalizePhone(v.phone) === normalizePhone(req.params.phone));
   res.json({ voted });
 });
 
-// Reset all votes (admin only — protected by admin token check on client)
-app.delete('/api/votes', (req, res) => {
-  writeJSON(FILES.votes, []);
-  res.json({ success: true });
-});
+app.delete('/api/votes', (req, res) => { writeJSON(FILES.votes, []); res.json({ success: true }); });
 
-// ══════════════════════════════════════════
-//  FRAUD
-// ══════════════════════════════════════════
-
+// ── FRAUD ──
 app.get('/api/fraud', (req, res) => res.json(readJSON(FILES.fraud)));
+app.post('/api/fraud', (req, res) => { const f=readJSON(FILES.fraud); f.push(req.body); writeJSON(FILES.fraud,f); res.json({success:true}); });
+app.delete('/api/fraud', (req, res) => { writeJSON(FILES.fraud,[]); res.json({success:true}); });
 
-app.post('/api/fraud', (req, res) => {
-  const fraud = readJSON(FILES.fraud);
-  fraud.push(req.body);
-  writeJSON(FILES.fraud, fraud);
-  res.json({ success: true });
-});
-
-app.delete('/api/fraud', (req, res) => {
-  writeJSON(FILES.fraud, []);
-  res.json({ success: true });
-});
-
-// ══════════════════════════════════════════
-//  LOGS
-// ══════════════════════════════════════════
-
+// ── LOGS ──
 app.get('/api/logs', (req, res) => res.json(readJSON(FILES.logs)));
+app.post('/api/logs', (req, res) => { const l=readJSON(FILES.logs); l.push(req.body); writeJSON(FILES.logs,l); res.json({success:true}); });
+app.delete('/api/logs', (req, res) => { writeJSON(FILES.logs,[]); res.json({success:true}); });
 
-app.post('/api/logs', (req, res) => {
-  const logs = readJSON(FILES.logs);
-  logs.push(req.body);
-  writeJSON(FILES.logs, logs);
-  res.json({ success: true });
-});
-
-app.delete('/api/logs', (req, res) => {
-  writeJSON(FILES.logs, []);
-  res.json({ success: true });
-});
-
-// ══════════════════════════════════════════
-//  FACES (for duplicate face detection)
-// ══════════════════════════════════════════
-
+// ── FACES ──
 app.get('/api/faces', (req, res) => res.json(readJSON(FILES.faces)));
+app.post('/api/faces', (req, res) => { const f=readJSON(FILES.faces); f.push(req.body); writeJSON(FILES.faces,f); res.json({success:true}); });
+app.delete('/api/faces', (req, res) => { writeJSON(FILES.faces,[]); res.json({success:true}); });
 
-app.post('/api/faces', (req, res) => {
-  const faces = readJSON(FILES.faces);
-  faces.push(req.body);
-  writeJSON(FILES.faces, faces);
-  res.json({ success: true });
-});
-
-app.delete('/api/faces', (req, res) => {
-  writeJSON(FILES.faces, []);
-  res.json({ success: true });
-});
-
-// ══════════════════════════════════════════
-//  SETTINGS
-// ══════════════════════════════════════════
-
+// ── SETTINGS ──
 const DEFAULT_SETTINGS = {
-  electionState: 'active',
-  resultsLocked: true,
-  manualReveal: false,
-  faceDetection: true,
-  sessionTimeout: true,
-  privacyNotice: true,
-  autoDeleteFaces: true,
-  adminPass: '13d38d0', // hash of 'admin2025'
-  schedStart: '',
-  schedEnd: ''
+  electionState:'active', resultsLocked:true, manualReveal:false,
+  faceDetection:true, sessionTimeout:true, privacyNotice:true,
+  autoDeleteFaces:true, adminPass:'13d38d0', schedStart:'', schedEnd:''
 };
-
 app.get('/api/settings', (req, res) => {
-  const raw = readJSON(FILES.settings);
-  const settings = Array.isArray(raw) ? DEFAULT_SETTINGS : Object.assign({}, DEFAULT_SETTINGS, raw);
-  res.json(settings);
+  const raw=readJSON(FILES.settings);
+  res.json(Array.isArray(raw)?DEFAULT_SETTINGS:Object.assign({},DEFAULT_SETTINGS,raw));
 });
-
 app.put('/api/settings', (req, res) => {
-  const current = (() => {
-    const raw = readJSON(FILES.settings);
-    return Array.isArray(raw) ? DEFAULT_SETTINGS : Object.assign({}, DEFAULT_SETTINGS, raw);
-  })();
-  const updated = Object.assign(current, req.body);
-  writeJSON(FILES.settings, updated);
+  const raw=readJSON(FILES.settings);
+  const cur=Array.isArray(raw)?DEFAULT_SETTINGS:Object.assign({},DEFAULT_SETTINGS,raw);
+  const updated=Object.assign(cur,req.body);
+  writeJSON(FILES.settings,updated);
   res.json(updated);
 });
 
-// ══════════════════════════════════════════
-//  DISABLED VOTERS
-// ══════════════════════════════════════════
-
+// ── DISABLED ──
 app.get('/api/disabled', (req, res) => res.json(readJSON(FILES.disabled)));
-
 app.post('/api/disabled', (req, res) => {
-  const { roll } = req.body;
-  const disabled = readJSON(FILES.disabled);
-  if (!disabled.includes(roll)) {
-    disabled.push(roll);
-    writeJSON(FILES.disabled, disabled);
-  }
-  res.json({ success: true });
+  const { phone }=req.body; const d=readJSON(FILES.disabled);
+  if(!d.includes(phone)){d.push(phone);writeJSON(FILES.disabled,d);}
+  res.json({success:true});
+});
+app.delete('/api/disabled/:phone', (req, res) => {
+  writeJSON(FILES.disabled, readJSON(FILES.disabled).filter(r=>r!==req.params.phone));
+  res.json({success:true});
 });
 
-app.delete('/api/disabled/:roll', (req, res) => {
-  let disabled = readJSON(FILES.disabled);
-  disabled = disabled.filter(r => r !== req.params.roll);
-  writeJSON(FILES.disabled, disabled);
-  res.json({ success: true });
-});
+// ── CANDIDATES ──
+app.get('/api/candidates', (req, res) => { const d=readJSON(FILES.candidates); res.json(Array.isArray(d)&&d.length===0?null:d); });
+app.put('/api/candidates', (req, res) => { writeJSON(FILES.candidates,req.body); res.json({success:true}); });
 
-// ══════════════════════════════════════════
-//  CANDIDATES
-// ══════════════════════════════════════════
+// ── CATCH-ALL ──
+app.get('*', (req, res) => res.sendFile(path.join(__dirname,'../frontend/index.html')));
 
-app.get('/api/candidates', (req, res) => {
-  const data = readJSON(FILES.candidates);
-  res.json(Array.isArray(data) && data.length === 0 ? null : data);
-});
-
-app.put('/api/candidates', (req, res) => {
-  writeJSON(FILES.candidates, req.body);
-  res.json({ success: true });
-});
-
-// ══════════════════════════════════════════
-//  CATCH-ALL → serve frontend
-// ══════════════════════════════════════════
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
-});
-
-app.listen(PORT, () => {
-  console.log(`✅  CR Election server running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`CR Election running on port ${PORT}`));

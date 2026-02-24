@@ -1,67 +1,117 @@
-// ════════════════════════════════════════════════════
-//  CONFIG — change this to your deployed backend URL
-// ════════════════════════════════════════════════════
-const API = window.location.origin; // Works automatically when backend serves the frontend
+const API = window.location.origin;
 
 // ════════════════════════════════════════════════════
-//  DATA — Students & Candidates
+//  STUDENT DATA — updated from PDF, keyed by phone
+//  Each student: { name, phone, section }
 // ════════════════════════════════════════════════════
 const ALPHA_STUDENTS = [
-  {name:"AARAV PATHAK",roll:"250901"},{name:"ADITYA MUKESH",roll:"250760"},
-  {name:"ADITYA PATHAK",roll:"250472"},{name:"AKSHITA SAXENA",roll:"250776"},
-  {name:"AMAN KUMAR",roll:"250626"},{name:"ANJALI MISHRA",roll:"250799"},
-  {name:"ANSHU RAJ BISOYI",roll:"250466"},{name:"ANUJ SONKAR",roll:"250770"},
-  {name:"ANUSHKA SINGH",roll:"250463"},{name:"ARYAN SINGH",roll:"250527"},
-  {name:"AYUSH KUMAR SINGH",roll:"250772"},{name:"AYUSH PANDEY",roll:"250630"},
-  {name:"BHAVESH PANDEY",roll:"250797"},{name:"DEPESH SIKARWAR",roll:"250749"},
-  {name:"DEVASHISH",roll:"250469"},{name:"DIPESH SINGH",roll:"250464"},
-  {name:"DIVYANSH GUPTA",roll:"250903"},{name:"EKANSH BANSAL",roll:"250556"},
-  {name:"GAUTAM KUMAR",roll:"250465"},{name:"GOURAV",roll:"250590"},
-  {name:"GURDEEP SINGH",roll:"250908"},{name:"HARSHITA",roll:"250753"},
-  {name:"JAGJEET KUMAR",roll:"250794"},{name:"JIYA KAUSHIK",roll:"250475"},
-  {name:"KIRAN SINHA",roll:"250757"},{name:"KUNAL PATEL",roll:"250762"},
-  {name:"KUSHAGRA GOEL",roll:"250460"},{name:"MANIKESH KUMAR",roll:"250781"},
-  {name:"MANSA BHATT",roll:"250745"},{name:"MAYANGLAMBAM LANCHENBA SINGH",roll:"250775"},
-  {name:"MAYANK RAJPUT",roll:"250755"},{name:"MOLLY ARORA",roll:"250878"},
-  {name:"NIKHIL SINGH",roll:"250310"},{name:"PARTH SARTHI",roll:"250771"},
-  {name:"PAWAN UNIYARA",roll:"250468"},{name:"PRAKHAR RAJ",roll:"250877"},
-  {name:"REWAS KHATRI",roll:"250787"},{name:"RISHAV RAJ",roll:"250906"},
-  {name:"SAGAR KUMAR",roll:"250804"},{name:"SAMAR KUMAR",roll:"250627"},
-  {name:"SAROJ VISHWAKARMA",roll:"250786"},{name:"SAURAV KUMAR",roll:"250783"},
-  {name:"SHREE AADYA SHARMA",roll:"250473"},{name:"SHUBHAM KUMAR",roll:"250782"},
-  {name:"SIYA BHARDWAJ",roll:"250876"},{name:"SOFIYA",roll:"250754"},
-  {name:"SURYANSH SETH",roll:"250521"},{name:"TANU SAINI",roll:"250467"},
-  {name:"TEJAS DADHICH",roll:"250868"},{name:"UDIT AGARWAL",roll:"250790"},
-  {name:"VIKASH KUMAR",roll:"250803"},{name:"YOGESH KUMAR RUDRA",roll:"250470"}
+  {name:"AARAV PATHAK",      phone:"9984963428"},
+  {name:"ADITYA MUKESH",     phone:"9507323450"},
+  {name:"ADITYA PATHAK",     phone:"7307338354"},
+  {name:"AKSHITA",           phone:"8375063031"},
+  {name:"AMAN KUMAR",        phone:"9334325841"},
+  {name:"ANJALI MISHRA",     phone:"6394413207"},
+  {name:"ANSHU RAJ BISOYI",  phone:"7788992348"},
+  {name:"ANUJ SONKAR",       phone:"8191987287"},
+  {name:"ANUSHKA SINGH",     phone:"7307850258"},
+  {name:"ARYAN SINGH",       phone:"9211328927"},
+  {name:"AYUSH KUMAR SINGH", phone:"9792037566"},
+  {name:"AYUSH PANDEY",      phone:"6392431225"},
+  {name:"BHAVESH PANDEY",    phone:"7465968293"},
+  {name:"DEPESH SIKARWAR",   phone:"8882649942"},
+  {name:"DEVASHISH",         phone:"7481063117"},
+  {name:"DIPESH SINGH",      phone:"9832824223"},
+  {name:"DIVYANSH GUPTA",    phone:"8447506537"},
+  {name:"EKANSH BANSAL",     phone:"9761179955"},
+  {name:"GAUTAM KUMAR",      phone:"8405020013"},
+  {name:"GOURAV",            phone:"9027181385"},
+  {name:"GURDEEP SINGH",     phone:"9873754054"},
+  {name:"HARSHITA",          phone:"9992938902"},
+  {name:"JAGJEET KUMAR",     phone:"7257044613"},
+  {name:"JIYA KAUSHIK",      phone:"8287693121"},
+  {name:"KIRAN SINHA",       phone:"6901147691"},
+  {name:"KUNAL PATEL",       phone:"9889529205"},
+  {name:"KUSHAGRA GOEL",     phone:"7303697477"},
+  {name:"MANIKESH KUMAR",    phone:"9905438708"},
+  {name:"MANSA BHATT",       phone:"9891761481"},
+  {name:"MAYANGLAMBAM LANCHENBA SINGH", phone:"9233938119"},
+  {name:"MAYANK RAJPUT",     phone:"8923256512"},
+  {name:"MOLLY ARORA",       phone:"7037836464"},
+  {name:"NIKHIL SINGH",      phone:"7985587641"},
+  {name:"PARTH SARTHI",      phone:"9229263192"},
+  {name:"PAWAN UNIYARA",     phone:"8982535643"},
+  {name:"PRAKHAR RAJ",       phone:"9263482241"},
+  {name:"REWAS KHATRI",      phone:"9635053235"},
+  {name:"RISHAV RAJ",        phone:"9204369955"},
+  {name:"SAGAR KUMAR",       phone:"7413967440"},
+  {name:"SAMAR KUMAR",       phone:"9142766509"},
+  {name:"SAROJ VISHWAKARMA", phone:"7869460977"},
+  {name:"SAURAV KUMAR",      phone:"9296362147"},
+  {name:"SHREE AADYA SHARMA",phone:"9540128484"},
+  {name:"SHUBHAM KUMAR",     phone:"8210251230"},
+  {name:"SIYA BHARDWAJ",     phone:"9315006462"},
+  {name:"SOFIYA",            phone:"9799383725"},
+  {name:"SURYANSH SETH",     phone:"9852219400"},
+  {name:"TANU SAINI",        phone:"7300986189"},
+  {name:"TEJAS DADHICH",     phone:"8238866201"},
+  {name:"UDIT AGARWAL",      phone:"7900259622"},
+  {name:"VIKASH KUMAR",      phone:"7065380035"},
+  {name:"YOGESH KR RUDRA",   phone:"9931646184"},
 ];
 
 const BETA_STUDENTS = [
-  {name:"ABDUL KABIR KHAN",roll:"250720"},{name:"ABHINAY SINGH",roll:"250784"},
-  {name:"AKSHAT PORWAL",roll:"250792"},{name:"ANAMIKA YADAV",roll:"250723"},
-  {name:"ANAND KUMAR",roll:"250905"},{name:"ANCHAL KUMARI",roll:"250459"},
-  {name:"ANSHIKA GUPTA",roll:"250761"},{name:"ARHAN DEV SINGH",roll:"250777"},
-  {name:"ARNAV ARYA",roll:"250798"},{name:"AYUSH KUMAR",roll:"250529"},
-  {name:"BIRAJ KS",roll:"250765"},{name:"CHANDRESHWAR NATH TRIPATHI",roll:"250722"},
-  {name:"CHETAN KUMAR VERMA",roll:"250631"},{name:"CHETAN SINGH",roll:"250800"},
-  {name:"DEBOJIT DEY",roll:"250773"},{name:"DHRUV TOMAR",roll:"250909"},
-  {name:"DIKSHA",roll:"250854"},{name:"DIVYANKA",roll:"250426"},
-  {name:"DIVYANSH AGARWAL",roll:"250867"},{name:"HARSH SURANA",roll:"250763"},
-  {name:"HARSHIT RANJAN",roll:"250764"},{name:"HIMANSHU",roll:"250767"},
-  {name:"KAVYA SRIVASTAVA",roll:"250747"},{name:"KUNAL VERMA",roll:"250779"},
-  {name:"MEET DEY",roll:"250461"},{name:"NAMAN GOYAL",roll:"250791"},
-  {name:"ONIK CHHATWAL",roll:"250750"},{name:"PALLAVI BHANDARI",roll:"250778"},
-  {name:"PRANJAL SRIVASTAV",roll:"250629"},{name:"PRINCE KUMAR",roll:"250807"},
-  {name:"PRINCE MAHUR",roll:"250766"},{name:"PRIYANKA NEGI",roll:"250801"},
-  {name:"PURNIMA RAJ",roll:"250748"},{name:"RAHIMUDDIN",roll:"250893"},
-  {name:"RISHABH KUMAR TYAGI",roll:"250769"},{name:"RITU RAJ SINHA",roll:"250873"},
-  {name:"SAFAK ALI",roll:"250628"},{name:"SAGAR KUMAR GUPTA",roll:"250752"},
-  {name:"SAIF ULLAH JAFRI",roll:"250788"},{name:"SAPNA SINGH",roll:"250743"},
-  {name:"SARITA",roll:"250948"},{name:"SHIVAM KUMAR",roll:"250477"},
-  {name:"SHREYA GUPTA",roll:"250476"},{name:"SHUBHAM GUPTA",roll:"250483"},
-  {name:"SUBHASH KUMAR YADAV",roll:"250866"},{name:"SURYANSH CHAUHAN",roll:"250243"},
-  {name:"SYED RAYYAN",roll:"250943"},{name:"TUSHAR BHOJWANI",roll:"250756"},
-  {name:"UJJWAL RAJ",roll:"250795"},{name:"UTKARSH PATWA",roll:"250774"},
-  {name:"YARRAGORLA VAMSHI",roll:"250793"},{name:"YASH AGARWAL",roll:"250471"}
+  {name:"ABDUL KABIR KHAN",        phone:"9259620874"},
+  {name:"ABHINAY SINGH",           phone:"7208664261"},
+  {name:"AKSHAT PORWAL",           phone:"9407561796"},
+  {name:"ANAMIKA YADAV",           phone:"7376510150"},
+  {name:"ANAND KUMAR",             phone:"9472260086"},
+  {name:"ANCHAL KUMARI",           phone:"9608304995"},
+  {name:"ANSHIKA GUPTA",           phone:"6393163475"},
+  {name:"ARHAN DEV SINGH",         phone:"6201678194"},
+  {name:"ARNAV ARYA",              phone:"7764076583"},
+  {name:"AYUSH KUMAR",             phone:"8757709486"},
+  {name:"BIRAJ KS",                phone:"9494666834"},
+  {name:"CHANDRESHWAR NATH TRIPATHI", phone:"9621592827"},
+  {name:"CHETAN KUMAR VERMA",      phone:"9369219870"},
+  {name:"CHETAN SINGH",            phone:"6388435468"},
+  {name:"DEBOJIT DEY",             phone:"6388435468"},
+  {name:"DHRUV TOMAR",             phone:"9779503522"},
+  {name:"DIKSHA",                  phone:"7903404424"},
+  {name:"DIVYANKA",                phone:"9838947714"},
+  {name:"DIVYANSH AGARWAL",        phone:"7455837309"},
+  {name:"HARSH SURANA",            phone:"9251034399"},
+  {name:"HARSHIT RANJAN",          phone:"9798168389"},
+  {name:"HIMANSHU",                phone:"9467180570"},
+  {name:"KAVYA SRIVASTAVA",        phone:"9910901316"},
+  {name:"KUNAL VERMA",             phone:"7376284881"},
+  {name:"MEET DEY",                phone:"7638006820"},
+  {name:"NAMAN GOYAL",             phone:"9119022835"},
+  {name:"ONIK CHHATWAL",           phone:"8295074739"},
+  {name:"PALLAVI BHANDARI",        phone:"8126763890"},
+  {name:"PRANJAL SRIVASTAV",       phone:""},
+  {name:"PRINCE KUMAR",            phone:"9905352625"},
+  {name:"PRINCE MAHUR",            phone:"8218495197"},
+  {name:"PRIYANKA NEGI",           phone:"9286328134"},
+  {name:"PURNIMA RAJ",             phone:"9229557166"},
+  {name:"RAHIMUDDIN GEHLOT",       phone:"7742400699"},
+  {name:"RISHABH KUMAR TYAGI",     phone:"9999117796"},
+  {name:"RITU RAJ SINHA",          phone:"8178898404"},
+  {name:"SAFAK ALI",               phone:"6394524398"},
+  {name:"SAGAR KUMAR GUPTA",       phone:"7903213470"},
+  {name:"SAIF ULLAH JAFRI",        phone:"7388332488"},
+  {name:"SAPNA SINGH",             phone:"9234219225"},
+  {name:"SARITA",                  phone:"7668327057"},
+  {name:"SHIVAM KUMAR",            phone:"6372502234"},
+  {name:"SHREYA GUPTA",            phone:"8318138027"},
+  {name:"SHUBHAM GUPTA",           phone:"9118111575"},
+  {name:"SUBHASH KUMAR YADAV",     phone:"8955125916"},
+  {name:"SURYANSH CHAUHAN",        phone:"7302830604"},
+  {name:"SYED RYAN",               phone:""},
+  {name:"TUSHAR BHOJWANI",         phone:"8085409988"},
+  {name:"UJJWAL RAJ",              phone:"9395935191"},
+  {name:"UTKARSH PATWA",           phone:"6233897044"},
+  {name:"YARRAGORLA VAMSHI",       phone:"7995580027"},
+  {name:"YASH AGGARWAL",           phone:"6378793796"},
 ];
 
 let CANDIDATES = {
@@ -75,40 +125,14 @@ let CANDIDATES = {
 };
 
 // ════════════════════════════════════════════════════
-//  API HELPERS — replace localStorage with server calls
+//  API HELPERS
 // ════════════════════════════════════════════════════
-async function apiGet(endpoint) {
-  try {
-    const r = await fetch(API + endpoint);
-    return await r.json();
-  } catch(e) { console.error('API GET error:', endpoint, e); return null; }
-}
-async function apiPost(endpoint, body) {
-  try {
-    const r = await fetch(API + endpoint, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(body)
-    });
-    return await r.json();
-  } catch(e) { console.error('API POST error:', endpoint, e); return null; }
-}
-async function apiPut(endpoint, body) {
-  try {
-    const r = await fetch(API + endpoint, {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(body)
-    });
-    return await r.json();
-  } catch(e) { console.error('API PUT error:', endpoint, e); return null; }
-}
-async function apiDelete(endpoint) {
-  try {
-    const r = await fetch(API + endpoint, { method: 'DELETE' });
-    return await r.json();
-  } catch(e) { console.error('API DELETE error:', endpoint, e); return null; }
-}
+async function apiGet(ep){try{const r=await fetch(API+ep);return await r.json();}catch(e){console.error(e);return null;}}
+async function apiPost(ep,body){try{const r=await fetch(API+ep,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}catch(e){console.error(e);return null;}}
+async function apiPut(ep,body){try{const r=await fetch(API+ep,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}catch(e){console.error(e);return null;}}
+async function apiDelete(ep){try{const r=await fetch(API+ep,{method:'DELETE'});return await r.json();}catch(e){console.error(e);return null;}}
+
+function normalizePhone(p){ return String(p).replace(/[\s\-+().]/g,'').replace(/^91/,''); }
 
 // ════════════════════════════════════════════════════
 //  STATE
@@ -120,30 +144,18 @@ let capturedImage = null;
 let selectedCandidate = null;
 let videoStream = null;
 let currentCandSection = 'Alpha';
+let otpResendTimer = null;
+const TOTAL_STEPS = 6;
 
-// ════════════════════════════════════════════════════
-//  SETTINGS (fetched from server)
-// ════════════════════════════════════════════════════
 const DEFAULT_SETTINGS = {
-  electionState:'active', resultsLocked:true, manualReveal:false,
-  faceDetection:true, sessionTimeout:true, privacyNotice:true,
-  autoDeleteFaces:true, adminPass:hashStr('admin2025'),
-  schedStart:'', schedEnd:''
+  electionState:'active',resultsLocked:true,manualReveal:false,
+  faceDetection:true,sessionTimeout:true,privacyNotice:true,
+  autoDeleteFaces:true,adminPass:hashStr('admin2025'),schedStart:'',schedEnd:''
 };
 
-async function loadSettings() {
-  const s = await apiGet('/api/settings');
-  return s || DEFAULT_SETTINGS;
-}
-async function saveSettings(s) {
-  await apiPut('/api/settings', s);
-}
-
-function hashStr(s) {
-  let h = 0;
-  for(let i=0; i<s.length; i++) { h = ((h<<5)-h)+s.charCodeAt(i); h|=0; }
-  return h.toString(16);
-}
+async function loadSettings(){const s=await apiGet('/api/settings');return s||DEFAULT_SETTINGS;}
+async function saveSettings(s){await apiPut('/api/settings',s);}
+function hashStr(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return h.toString(16);}
 
 // ════════════════════════════════════════════════════
 //  INIT
@@ -151,199 +163,311 @@ function hashStr(s) {
 document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('alpha-count').textContent = ALPHA_STUDENTS.length + ' students';
   document.getElementById('beta-count').textContent = BETA_STUDENTS.length + ' students';
-
   settings = await loadSettings();
   updateHeaderStatus();
   startCountdownTimer();
-
-  // Load candidates from server if saved
   const savedCands = await apiGet('/api/candidates');
-  if (savedCands) CANDIDATES = savedCands;
+  if(savedCands) CANDIDATES = savedCands;
 });
 
-function getStudents(section) { return section==='Alpha' ? ALPHA_STUDENTS : BETA_STUDENTS; }
-function normName(n) { return n.trim().toUpperCase().replace(/\s+/g,' '); }
+function getStudents(sec){ return sec==='Alpha' ? ALPHA_STUDENTS : BETA_STUDENTS; }
+function normName(n){ return n.trim().toUpperCase().replace(/\s+/g,' '); }
 
-function updateHeaderStatus() {
-  const el = document.getElementById('header-status');
-  const txt = document.getElementById('status-text');
-  const dot = el.querySelector('.status-dot');
-  const s = settings.electionState || 'active';
-  el.className = 'election-status ' + s;
-  txt.textContent = s==='active'?'VOTING OPEN':s==='paused'?'PAUSED':s==='ended'?'ENDED':'PENDING';
-  dot.className = 'status-dot' + (s==='active'?' blink':'');
+function updateHeaderStatus(){
+  const el=document.getElementById('header-status');
+  const txt=document.getElementById('status-text');
+  const dot=el.querySelector('.status-dot');
+  const s=settings.electionState||'active';
+  el.className='election-status '+s;
+  txt.textContent=s==='active'?'VOTING OPEN':s==='paused'?'PAUSED':s==='ended'?'ENDED':'PENDING';
+  dot.className='status-dot'+(s==='active'?' blink':'');
 }
 
 // ════════════════════════════════════════════════════
-//  VOTING FLOW
+//  STEP 1 — SELECT SECTION
 // ════════════════════════════════════════════════════
-function selectSection(sec) {
+function selectSection(sec){
   if(settings.electionState==='ended'){alert('The election has ended.');return;}
   if(settings.electionState==='pending'){alert('The election has not started yet.');return;}
-  if(settings.electionState==='paused'){alert('Voting is currently paused. Please wait.');return;}
-
-  currentSection = sec;
-  const students = getStudents(sec);
-  document.getElementById('db-count').textContent = students.length;
-
-  const badge = document.getElementById('section-indicator');
-  badge.className = 'section-badge ' + sec.toLowerCase();
-  badge.textContent = '● SECTION ' + sec.toUpperCase();
-
-  const vbadge = document.getElementById('vote-section-badge');
-  vbadge.className = 'section-badge ' + sec.toLowerCase();
-  vbadge.textContent = '● SECTION ' + sec.toUpperCase();
-
+  if(settings.electionState==='paused'){alert('Voting is currently paused.');return;}
+  currentSection=sec;
+  document.getElementById('db-count').textContent=getStudents(sec).length;
+  ['section-indicator','vote-section-badge'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.className='section-badge '+sec.toLowerCase();
+    el.textContent='● SECTION '+sec.toUpperCase();
+  });
   document.getElementById('sec-alpha').classList.remove('selected');
   document.getElementById('sec-beta').classList.remove('selected');
   document.getElementById('sec-'+sec.toLowerCase()).classList.add('selected');
-
   goToStep(2);
 }
 
-async function verifyIdentity() {
-  const nameVal = document.getElementById('inp-name').value.trim();
-  const rollVal = document.getElementById('inp-roll').value.trim();
+// ════════════════════════════════════════════════════
+//  STEP 2 — IDENTITY (Name + Phone)
+// ════════════════════════════════════════════════════
+async function verifyIdentity(){
+  const nameVal=document.getElementById('inp-name').value.trim();
+  const phoneVal=normalizePhone(document.getElementById('inp-phone').value.trim());
   document.getElementById('err-name').textContent='';
-  document.getElementById('err-roll').textContent='';
+  document.getElementById('err-phone').textContent='';
   document.getElementById('inp-name').classList.remove('err');
-  document.getElementById('inp-roll').classList.remove('err');
+  document.getElementById('inp-phone').classList.remove('err');
 
   if(!nameVal){document.getElementById('err-name').textContent='Name required';document.getElementById('inp-name').classList.add('err');return;}
-  if(!rollVal){document.getElementById('err-roll').textContent='Roll required';document.getElementById('inp-roll').classList.add('err');return;}
+  if(!phoneVal){document.getElementById('err-phone').textContent='Phone required';document.getElementById('inp-phone').classList.add('err');return;}
 
-  const students = getStudents(currentSection);
-  const student = students.find(s => normName(s.name)===normName(nameVal) && s.roll===rollVal);
+  const students=getStudents(currentSection);
+  const student=students.find(s=>normName(s.name)===normName(nameVal) && normalizePhone(s.phone)===phoneVal);
 
-  if(!student) {
-    const byRoll = students.find(s=>s.roll===rollVal);
-    if(byRoll) document.getElementById('err-name').textContent=`Roll ${rollVal} belongs to "${byRoll.name}" — check spelling`;
-    else document.getElementById('err-name').textContent='Student not found in Section '+currentSection+'. Check details.';
+  if(!student){
+    const byPhone=students.find(s=>normalizePhone(s.phone)===phoneVal);
+    const byName=students.find(s=>normName(s.name)===normName(nameVal));
+    if(byPhone) document.getElementById('err-name').textContent=`This phone belongs to a different student — check your name`;
+    else if(byName) document.getElementById('err-phone').textContent=`Name found but phone doesn't match — check your phone number`;
+    else document.getElementById('err-name').textContent='Student not found in Section '+currentSection;
     document.getElementById('inp-name').classList.add('err');
     await logEvent('FAILED_IDENTITY',`Failed identity check — Section ${currentSection}`,'⚠️');
     return;
   }
 
-  // Check disabled
-  const disabled = await apiGet('/api/disabled') || [];
-  if(disabled.includes(student.roll)) {
-    document.getElementById('err-roll').textContent='⛔ This voter has been disabled by admin.';
+  if(!student.phone){
+    document.getElementById('err-phone').textContent='No phone number registered for this student. Contact admin.';
     return;
   }
 
-  // Check already voted (server-side authoritative check)
-  const checkResult = await apiGet('/api/votes/check/' + student.roll);
-  if(checkResult && checkResult.voted) {
-    document.getElementById('err-roll').textContent='⛔ This student has already voted.';
+  const disabled=await apiGet('/api/disabled')||[];
+  if(disabled.includes(normalizePhone(student.phone))){
+    document.getElementById('err-phone').textContent='⛔ This voter has been disabled by admin.';return;
+  }
+
+  const checkResult=await apiGet('/api/votes/check/'+normalizePhone(student.phone));
+  if(checkResult&&checkResult.voted){
+    document.getElementById('err-phone').textContent='⛔ This student has already voted.';
     await logFraud('DUPLICATE_VOTE_ATTEMPT','[hidden]','[hidden]',currentSection,'Identity step');
     return;
   }
 
-  currentStudent = {...student, section: currentSection};
+  currentStudent={...student,section:currentSection};
+
+  // Send OTP
+  const sendBtn=document.querySelector('#step2 .btn-primary');
+  sendBtn.disabled=true;sendBtn.innerHTML='<div class="spin"></div> Sending OTP...';
+
+  const result=await apiPost('/api/otp/send',{phone:normalizePhone(student.phone)});
+
+  sendBtn.disabled=false;sendBtn.innerHTML='<span>Verify & Send OTP</span><span>→</span>';
+
+  if(!result||result.error){
+    document.getElementById('err-phone').textContent='Failed to send OTP: '+(result?.error||'Server error');return;
+  }
+
   await logEvent('IDENTITY_VERIFIED',`Voter verified — Section ${currentSection}`,'✅');
+
+  // Dev mode — show OTP on screen for testing
+  if(result.dev){
+    document.getElementById('otp-sub').textContent=`[DEV MODE] OTP: ${result.otp} (Twilio not configured)`;
+  } else {
+    document.getElementById('otp-sub').textContent=`A 6-digit OTP has been sent to your WhatsApp (+91 ${student.phone.slice(-10)}).`;
+  }
+
   goToStep(3);
-  startCamera();
+  startOTPTimer();
 }
 
 // ════════════════════════════════════════════════════
-//  FACE-API.JS — Face Detection & Recognition
+//  STEP 3 — OTP VERIFICATION
 // ════════════════════════════════════════════════════
-const MODELS_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
-const FACE_MATCH_THRESHOLD = 0.45;
-let faceModelsLoaded = false;
-let liveDetectionLoop = null;
+function startOTPTimer(){
+  let secs=300; // 5 min
+  clearInterval(otpResendTimer);
+  document.getElementById('resend-btn').disabled=true;
+  otpResendTimer=setInterval(()=>{
+    secs--;
+    const m=Math.floor(secs/60),s=String(secs%60).padStart(2,'0');
+    document.getElementById('otp-timer').textContent=secs>0?`OTP expires in ${m}:${s}`:'OTP expired. Please resend.';
+    if(secs<=0){
+      clearInterval(otpResendTimer);
+      document.getElementById('resend-btn').disabled=false;
+    }
+  },1000);
+}
 
-async function loadFaceModels() {
+async function verifyOTP(){
+  const otpVal=document.getElementById('inp-otp').value.trim();
+  document.getElementById('err-otp').textContent='';
+  if(!otpVal||otpVal.length!==6){document.getElementById('err-otp').textContent='Enter the 6-digit OTP';return;}
+
+  const btn=document.querySelector('#step3 .btn-primary');
+  btn.disabled=true;btn.innerHTML='<div class="spin"></div> Verifying...';
+
+  const result=await apiPost('/api/otp/verify',{phone:normalizePhone(currentStudent.phone),otp:otpVal});
+
+  btn.disabled=false;btn.innerHTML='Verify OTP →';
+
+  if(!result||result.error){
+    document.getElementById('err-otp').textContent=result?.error||'Verification failed';return;
+  }
+
+  clearInterval(otpResendTimer);
+  await logEvent('OTP_VERIFIED',`OTP verified — Section ${currentSection}`,'📱');
+  goToStep(4);
+  startCamera();
+}
+
+async function resendOTP(){
+  const result=await apiPost('/api/otp/send',{phone:normalizePhone(currentStudent.phone)});
+  if(result&&result.dev) document.getElementById('otp-sub').textContent=`[DEV] New OTP: ${result.otp}`;
+  else document.getElementById('otp-sub').textContent='New OTP sent to your WhatsApp.';
+  document.getElementById('inp-otp').value='';
+  startOTPTimer();
+}
+
+// ════════════════════════════════════════════════════
+//  STEP 4 — LIVENESS (Blink Detection) + Face Scan
+// ════════════════════════════════════════════════════
+const MODELS_URL='https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
+const FACE_MATCH_THRESHOLD=0.45;
+let faceModelsLoaded=false;
+let liveDetectionLoop=null;
+
+// Blink detection state
+let blinkState={required:false,challenge:'',completed:false,eyesWereClosed:false,blinkCount:0,requiredBlinks:2};
+
+async function loadFaceModels(){
   if(faceModelsLoaded) return true;
-  try {
-    const sb = document.getElementById('face-status');
-    sb.style.display='flex'; sb.className='status info';
-    sb.innerHTML='<div class="spin"></div> Loading face recognition models...';
+  try{
+    const sb=document.getElementById('face-status');
+    sb.style.display='flex';sb.className='status info';
+    sb.innerHTML='<div class="spin"></div> Loading face models...';
     await Promise.all([
       faceapi.nets.ssdMobilenetv1.loadFromUri(MODELS_URL),
       faceapi.nets.faceLandmark68Net.loadFromUri(MODELS_URL),
       faceapi.nets.faceRecognitionNet.loadFromUri(MODELS_URL),
     ]);
-    faceModelsLoaded = true;
+    faceModelsLoaded=true;
     sb.style.display='none';
     return true;
-  } catch(e) {
-    const sb = document.getElementById('face-status');
-    sb.style.display='flex'; sb.className='status error';
-    sb.innerHTML='❌ Failed to load face models. Check internet and retry.';
+  }catch(e){
+    const sb=document.getElementById('face-status');
+    sb.style.display='flex';sb.className='status error';
+    sb.innerHTML='❌ Failed to load face models. Check internet.';
     return false;
   }
 }
 
-async function startCamera() {
-  const ok = await loadFaceModels();
+async function startCamera(){
+  const ok=await loadFaceModels();
   if(!ok) return;
-  try {
-    videoStream = await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false
-    });
-    const video = document.getElementById('video');
-    video.srcObject = videoStream;
-    video.onloadedmetadata = () => { video.play(); startLiveDetectionOverlay(); };
-    document.getElementById('cam-hint').textContent='Align face in the oval — keep still';
-    document.getElementById('capture-btn').disabled=false;
-  } catch(e) {
-    const sb = document.getElementById('face-status');
-    sb.style.display='flex'; sb.className='status warning';
-    sb.innerHTML='⚠️ Camera permission denied. Please allow camera access and reload.';
-    document.getElementById('capture-btn').disabled=true;
+  try{
+    videoStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false});
+    const video=document.getElementById('video');
+    video.srcObject=videoStream;
+    video.onloadedmetadata=()=>{video.play();startBlinkLivenessLoop();};
+    document.getElementById('cam-hint').textContent='Align face in the oval';
+  }catch(e){
+    const sb=document.getElementById('face-status');
+    sb.style.display='flex';sb.className='status warning';
+    sb.innerHTML='⚠️ Camera permission denied. Allow camera access and retry.';
   }
 }
 
-function startLiveDetectionOverlay() {
+// Eye Aspect Ratio — measures how open the eye is
+// landmarks[36–41] = left eye, [42–47] = right eye
+function eyeAspectRatio(eye){
+  const dist=(p1,p2)=>Math.sqrt((p1.x-p2.x)**2+(p1.y-p2.y)**2);
+  const A=dist(eye[1],eye[5]);
+  const B=dist(eye[2],eye[4]);
+  const C=dist(eye[0],eye[3]);
+  return (A+B)/(2*C);
+}
+
+const BLINK_THRESHOLD=0.22; // EAR below this = eyes closed
+
+function startBlinkLivenessLoop(){
   if(liveDetectionLoop) return;
-  const video = document.getElementById('video');
-  let liveCanvas = document.getElementById('live-detect-canvas');
-  if(!liveCanvas) {
-    liveCanvas = document.createElement('canvas');
+  const video=document.getElementById('video');
+
+  // Reset blink state
+  blinkState={required:true,completed:false,eyesWereClosed:false,blinkCount:0,requiredBlinks:2};
+
+  const challengeEl=document.getElementById('liveness-challenge');
+  challengeEl.style.display='flex';
+  challengeEl.innerHTML=`👁️ Liveness Check: Please <strong>blink ${blinkState.requiredBlinks} times</strong> naturally`;
+
+  let liveCanvas=document.getElementById('live-detect-canvas');
+  if(!liveCanvas){
+    liveCanvas=document.createElement('canvas');
     liveCanvas.id='live-detect-canvas';
     liveCanvas.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
     document.getElementById('cam-wrap').appendChild(liveCanvas);
   }
-  liveDetectionLoop = setInterval(async () => {
+
+  liveDetectionLoop=setInterval(async()=>{
     if(!videoStream||!video.srcObject){stopLiveDetection();return;}
     if(video.readyState<2) return;
-    const detection = await faceapi
+
+    const detection=await faceapi
       .detectSingleFace(video,new faceapi.SsdMobilenetv1Options({minConfidence:0.5}))
-      .withFaceLandmarks();
-    liveCanvas.width=video.videoWidth; liveCanvas.height=video.videoHeight;
+      .withFaceLandmarks()
+      .withFaceDescriptors();
+
+    liveCanvas.width=video.videoWidth;
+    liveCanvas.height=video.videoHeight;
     const ctx=liveCanvas.getContext('2d');
     ctx.clearRect(0,0,liveCanvas.width,liveCanvas.height);
-    if(detection) {
-      const box=detection.detection.box;
-      const mirroredX=liveCanvas.width-box.x-box.width;
-      ctx.strokeStyle='#00e5a0'; ctx.lineWidth=2.5;
-      ctx.shadowColor='#00e5a0'; ctx.shadowBlur=12;
-      ctx.strokeRect(mirroredX,box.y,box.width,box.height);
-      ctx.fillStyle='#00e5a0'; ctx.font='bold 11px monospace'; ctx.shadowBlur=0;
-      const conf=Math.round(detection.detection.score*100);
-      ctx.fillText(`FACE ${conf}%`,mirroredX,box.y>14?box.y-5:box.y+14);
-      document.getElementById('capture-btn').disabled=false;
-      document.getElementById('cam-hint').textContent=`✓ Face detected (${conf}% confidence) — ready to capture`;
-    } else {
-      document.getElementById('cam-hint').textContent='No face detected — move closer or improve lighting';
+
+    if(!detection){
+      document.getElementById('cam-hint').textContent='No face detected — move closer';
+      return;
     }
-  },200);
+
+    // Draw face box
+    const box=detection.detection.box;
+    const mx=liveCanvas.width-box.x-box.width;
+    ctx.strokeStyle=blinkState.completed?'#00e5a0':'#7c6bff';
+    ctx.lineWidth=2.5;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=12;
+    ctx.strokeRect(mx,box.y,box.width,box.height);
+
+    // Get eye landmarks (mirrored)
+    const pts=detection.landmarks.positions;
+    const leftEye=[pts[36],pts[37],pts[38],pts[39],pts[40],pts[41]].map(p=>({x:liveCanvas.width-p.x,y:p.y}));
+    const rightEye=[pts[42],pts[43],pts[44],pts[45],pts[46],pts[47]].map(p=>({x:liveCanvas.width-p.x,y:p.y}));
+    const ear=(eyeAspectRatio(leftEye)+eyeAspectRatio(rightEye))/2;
+
+    // Blink logic
+    if(!blinkState.completed){
+      if(ear<BLINK_THRESHOLD && !blinkState.eyesWereClosed){
+        blinkState.eyesWereClosed=true; // eyes just closed
+      } else if(ear>=BLINK_THRESHOLD && blinkState.eyesWereClosed){
+        blinkState.eyesWereClosed=false; // eyes just opened = 1 blink
+        blinkState.blinkCount++;
+        const remaining=blinkState.requiredBlinks-blinkState.blinkCount;
+        if(remaining>0){
+          document.getElementById('liveness-challenge').innerHTML=
+            `👁️ Good! <strong>${remaining} more blink${remaining>1?'s':''}</strong> to go...`;
+        }
+        if(blinkState.blinkCount>=blinkState.requiredBlinks){
+          blinkState.completed=true;
+          document.getElementById('liveness-challenge').innerHTML='✅ Liveness confirmed! Processing face...';
+          document.getElementById('cam-hint').textContent='✓ Blink detected — capturing...';
+          stopLiveDetection();
+          await captureAndProcess(detection);
+        }
+      }
+    }
+
+    // Draw EAR indicator
+    ctx.fillStyle=ear<BLINK_THRESHOLD?'#ff5f7e':'#00e5a0';
+    ctx.font='bold 10px monospace';ctx.shadowBlur=0;
+    ctx.fillText(`BLINK: ${blinkState.blinkCount}/${blinkState.requiredBlinks}`,mx,box.y>18?box.y-5:box.y+14);
+
+  },120); // 120ms interval — fast enough for blink detection
 }
 
-function stopLiveDetection() {
-  if(liveDetectionLoop){clearInterval(liveDetectionLoop);liveDetectionLoop=null;}
-  const lc=document.getElementById('live-detect-canvas');
-  if(lc) lc.remove();
-}
-
-async function capturePhoto() {
+// Called automatically after blink challenge passes
+async function captureAndProcess(liveDetection){
   const video=document.getElementById('video');
-  if(!videoStream||video.readyState<2){
-    const sb=document.getElementById('face-status');
-    sb.style.display='flex';sb.className='status warning';sb.innerHTML='⚠️ Camera not ready. Wait a moment.';return;
-  }
-  stopLiveDetection();
   const canvas=document.getElementById('canvas-preview');
   const ctx=canvas.getContext('2d');
   const w=video.videoWidth,h=video.videoHeight;
@@ -352,16 +476,20 @@ async function capturePhoto() {
   capturedImage=canvas.toDataURL('image/jpeg',0.92);
   canvas.style.display='block';video.style.display='none';
   document.getElementById('cam-overlay').innerHTML='<div class="tick-overlay"><div class="tick-circle">✓</div></div>';
-  document.getElementById('cam-hint').textContent='Analyzing...';
   stopCamera();
-  await processFace();
+  await processFace(liveDetection);
 }
 
-function retakePhoto() {
-  stopCamera();stopLiveDetection();capturedImage=null;
+function stopLiveDetection(){
+  if(liveDetectionLoop){clearInterval(liveDetectionLoop);liveDetectionLoop=null;}
+  const lc=document.getElementById('live-detect-canvas');
+  if(lc) lc.remove();
+}
+
+function retakePhoto(){
+  stopCamera();stopLiveDetection();capturedImage=null;blinkState={completed:false,blinkCount:0,eyesWereClosed:false,requiredBlinks:2};
   const canvas=document.getElementById('canvas-preview');
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
   canvas.style.display='none';canvas.width=1;canvas.height=1;
   const video=document.getElementById('video');
   video.srcObject=null;video.style.display='block';
@@ -369,96 +497,77 @@ function retakePhoto() {
   document.getElementById('cam-hint').textContent='Align face in the oval guide';
   document.getElementById('face-status').style.display='none';
   document.getElementById('proceed-face-btn').style.display='none';
-  document.getElementById('capture-btn').disabled=true;
+  document.getElementById('liveness-challenge').style.display='none';
   setTimeout(()=>startCamera(),350);
 }
 
-function stopCamera() {
+function stopCamera(){
   if(videoStream){videoStream.getTracks().forEach(t=>t.stop());videoStream=null;}
 }
 
-async function processFace() {
+async function processFace(existingDetection){
   const sb=document.getElementById('face-status');
   sb.style.display='flex';sb.className='status info';
-  sb.innerHTML='<div class="spin"></div> Detecting face in captured image...';
-  if(!capturedImage) return;
-
-  const img=await loadImageFromDataUrl(capturedImage);
-  sb.innerHTML='<div class="spin"></div> Verifying a human face is present...';
-  const detectionOptions=new faceapi.SsdMobilenetv1Options({minConfidence:0.6});
-  const detections=await faceapi.detectAllFaces(img,detectionOptions).withFaceLandmarks().withFaceDescriptors();
-
-  if(detections.length===0){
-    sb.className='status error';
-    sb.innerHTML='❌ No face detected in the photo. Retake — ensure your face is clearly visible and well-lit.';
-    document.getElementById('cam-overlay').innerHTML='<div class="tick-overlay"><div class="tick-circle" style="background:var(--error)">❌</div></div>';
-    await logEvent('FACE_NOT_DETECTED',`No face found in capture`,'⚠️');
-    return;
-  }
-  if(detections.length>1){
-    sb.className='status error';
-    sb.innerHTML=`❌ ${detections.length} faces detected. Only one person should be in frame.`;
-    return;
-  }
-
   sb.innerHTML='<div class="spin"></div> Extracting biometric signature...';
-  const descriptor=Array.from(detections[0].descriptor);
-  const confidence=Math.round(detections[0].detection.score*100);
 
-  // Check duplicate faces against server
-  if(settings.faceDetection) {
-    sb.innerHTML='<div class="spin"></div> Checking against registered faces...';
+  // Use the detection we already have from the live loop (avoids re-detecting)
+  let descriptor;
+  let confidence;
+
+  if(existingDetection && existingDetection.descriptor){
+    descriptor=Array.from(existingDetection.descriptor);
+    confidence=Math.round(existingDetection.detection.score*100);
+  } else {
+    // Fallback: re-detect from captured image
+    const img=await loadImageFromDataUrl(capturedImage);
+    const detections=await faceapi.detectAllFaces(img,new faceapi.SsdMobilenetv1Options({minConfidence:0.6}))
+      .withFaceLandmarks().withFaceDescriptors();
+    if(!detections.length){
+      sb.className='status error';sb.innerHTML='❌ No face detected. Please retry.';return;
+    }
+    descriptor=Array.from(detections[0].descriptor);
+    confidence=Math.round(detections[0].detection.score*100);
+  }
+
+  if(settings.faceDetection){
+    sb.innerHTML='<div class="spin"></div> Checking for duplicate faces...';
     const storedFaces=await apiGet('/api/faces')||[];
-
-    let dupRoll=null,closestDist=Infinity;
-    for(const stored of storedFaces) {
-      if(stored.roll===currentStudent.roll) continue;
+    let dupFound=false,closestDist=Infinity;
+    for(const stored of storedFaces){
+      if(normalizePhone(stored.phone)===normalizePhone(currentStudent.phone)) continue;
       if(!stored.descriptor) continue;
       const dist=euclideanDistance(descriptor,stored.descriptor);
       if(dist<closestDist) closestDist=dist;
-      if(dist<FACE_MATCH_THRESHOLD){dupRoll=stored.roll;break;}
+      if(dist<FACE_MATCH_THRESHOLD){dupFound=true;break;}
     }
-
-    if(dupRoll){
+    if(dupFound){
       sb.className='status error';
-      sb.innerHTML=`⛔ This face is already registered to another student (Roll: ${dupRoll}).`;
+      sb.innerHTML='⛔ This face matches another registered voter. Duplicate voting prevented.';
       document.getElementById('cam-overlay').innerHTML='<div class="tick-overlay"><div class="tick-circle" style="background:var(--error)">⛔</div></div>';
-      await logFraud('FACE_DUPLICATE','[hidden]','[hidden]',currentStudent.section,
-        `Matched roll [hidden] (distance: ${closestDist.toFixed(3)})`);
+      await logFraud('FACE_DUPLICATE','[hidden]','[hidden]',currentStudent.section,`Distance: ${closestDist.toFixed(3)}`);
       return;
     }
-
-    // Save face descriptor to server
-    await apiPost('/api/faces',{roll:currentStudent.roll,descriptor,capturedAt:new Date().toISOString()});
+    await apiPost('/api/faces',{phone:normalizePhone(currentStudent.phone),descriptor,capturedAt:new Date().toISOString()});
   }
 
   sb.className='status success';
-  sb.innerHTML=`✅ Face verified — <strong>${currentStudent.name}</strong> · Confidence: ${confidence}% · No duplicates found.`;
-  document.getElementById('cam-hint').textContent='✓ Face verified';
+  sb.innerHTML=`✅ Liveness + face verified — Confidence: ${confidence}% · No duplicates found`;
+  document.getElementById('cam-hint').textContent='✓ Verified';
   document.getElementById('proceed-face-btn').style.display='block';
-  await logEvent('FACE_VERIFIED',`Face verified — confidence ${confidence}% · No duplicates found`,'🤖');
+  await logEvent('FACE_VERIFIED',`Face verified — confidence ${confidence}%`,'🤖');
 }
 
-function loadImageFromDataUrl(dataUrl){
-  return new Promise((resolve,reject)=>{
-    const img=new Image();
-    img.onload=()=>resolve(img);img.onerror=reject;img.src=dataUrl;
-  });
-}
-function euclideanDistance(a,b){
-  let sum=0;for(let i=0;i<a.length;i++)sum+=(a[i]-b[i])**2;return Math.sqrt(sum);
-}
-function proceedAfterFace(){stopCamera();stopLiveDetection();renderCandidates();goToStep(4);}
+function loadImageFromDataUrl(d){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=d;});}
+function euclideanDistance(a,b){let s=0;for(let i=0;i<a.length;i++)s+=(a[i]-b[i])**2;return Math.sqrt(s);}
+function proceedAfterFace(){stopCamera();stopLiveDetection();renderCandidates();goToStep(5);}
 
 // ════════════════════════════════════════════════════
-//  VOTE
+//  STEP 5 — VOTE
 // ════════════════════════════════════════════════════
 function renderCandidates(){
   const cands=CANDIDATES[currentSection]||[];
   const grid=document.getElementById('cands-grid');
-  if(!cands.length){
-    grid.innerHTML='<div class="status warning">⚠ No candidates configured for this section. Contact admin.</div>';return;
-  }
+  if(!cands.length){grid.innerHTML='<div class="status warning">⚠ No candidates configured. Contact admin.</div>';return;}
   grid.innerHTML=cands.map(c=>`
     <div class="cand-card" id="cand-${c.id}" onclick="selectCand('${c.id}')">
       <div class="cand-avatar" style="background:${c.bg};color:${c.color}">${c.name.charAt(0)}</div>
@@ -480,27 +589,22 @@ async function submitVote(){
   if(!selectedCandidate){document.getElementById('vote-warn').style.display='flex';return;}
   const btn=document.getElementById('submit-btn');
   btn.disabled=true;btn.innerHTML='<div class="spin"></div> Recording...';
-
   const cand=CANDIDATES[currentSection].find(c=>c.id===selectedCandidate);
   const vote={
-    roll:currentStudent.roll, name:currentStudent.name,
-    section:currentSection, candidateId:selectedCandidate,
-    candidateName:cand.name, voteId:'V'+Date.now(),
-    timestamp:new Date().toISOString()
+    phone:normalizePhone(currentStudent.phone),name:currentStudent.name,
+    section:currentSection,candidateId:selectedCandidate,
+    candidateName:cand.name,voteId:'V'+Date.now(),timestamp:new Date().toISOString()
   };
-
   const result=await apiPost('/api/votes',vote);
-
-  if(result && result.error && result.error==='Already voted'){
+  if(result&&result.error==='Already voted'){
     btn.disabled=false;btn.innerHTML='🗳️ Submit My Vote';
+    document.getElementById('vote-warn').innerHTML='⛔ Already voted.';
     document.getElementById('vote-warn').style.display='flex';
-    document.getElementById('vote-warn').innerHTML='⛔ Our records show this student has already voted.';
     return;
   }
-
   await logEvent('VOTE_CAST',`Anonymous → ${cand.name} (Section ${currentSection})`,'🗳️');
   showReceipt(vote);
-  goToStep(5);
+  goToStep(6);
 }
 
 function showReceipt(v){
@@ -513,18 +617,18 @@ function showReceipt(v){
 }
 
 // ════════════════════════════════════════════════════
-//  STEP NAVIGATION
+//  STEP NAVIGATION — 6 steps
 // ════════════════════════════════════════════════════
 function goToStep(n){
-  for(let i=1;i<=5;i++){
+  for(let i=1;i<=TOTAL_STEPS;i++){
     const card=document.getElementById('step'+i);
     const snum=document.getElementById('s'+i);
-    const lbl=document.querySelectorAll('.step-label')[i-1];
-    card.classList.remove('active');snum.classList.remove('active');
+    const labels=document.querySelectorAll('.step-label');
+    card.classList.remove('active');snum.classList.remove('active','done');
     if(i<n){snum.classList.add('done');snum.textContent='✓';}
-    else if(i===n){snum.classList.remove('done');snum.textContent=i;snum.classList.add('active');}
-    else{snum.classList.remove('done','active');snum.textContent=i;}
-    if(lbl) lbl.classList.toggle('active',i===n);
+    else if(i===n){snum.textContent=i;snum.classList.add('active');}
+    else{snum.textContent=i;}
+    if(labels[i-1]) labels[i-1].classList.toggle('active',i===n);
     const conn=document.getElementById('c'+i);
     if(conn) conn.classList.toggle('done',i<n);
   }
@@ -537,31 +641,16 @@ function goToStep(n){
 // ════════════════════════════════════════════════════
 let adminAuthed=false;
 
-function openAdmin(){
-  document.getElementById('admin-overlay').classList.add('open');
-  if(!adminAuthed){showAuthScreen();}
-  else{showAdminUI();showPage('dashboard');}
-}
+function openAdmin(){document.getElementById('admin-overlay').classList.add('open');if(!adminAuthed)showAuthScreen();else{showAdminUI();showPage('dashboard');}}
 function closeAdmin(){document.getElementById('admin-overlay').classList.remove('open');}
-function showAuthScreen(){
-  document.getElementById('admin-auth').style.display='block';
-  document.getElementById('admin-sidebar').style.display='none';
-}
-function showAdminUI(){
-  document.getElementById('admin-auth').style.display='none';
-  document.getElementById('admin-sidebar').style.display='flex';
-}
+function showAuthScreen(){document.getElementById('admin-auth').style.display='block';document.getElementById('admin-sidebar').style.display='none';}
+function showAdminUI(){document.getElementById('admin-auth').style.display='none';document.getElementById('admin-sidebar').style.display='flex';}
 
 async function checkPass(){
   const p=document.getElementById('admin-pass').value;
   settings=await loadSettings();
-  if(hashStr(p)===settings.adminPass){
-    adminAuthed=true;showAdminUI();showPage('dashboard');
-    await logEvent('ADMIN_LOGIN','Admin panel accessed','🔐');
-  } else {
-    document.getElementById('pass-err').style.display='block';
-    await logEvent('ADMIN_FAIL','Wrong password attempt','⚠️');
-  }
+  if(hashStr(p)===settings.adminPass){adminAuthed=true;showAdminUI();showPage('dashboard');await logEvent('ADMIN_LOGIN','Admin panel accessed','🔐');}
+  else{document.getElementById('pass-err').style.display='block';await logEvent('ADMIN_FAIL','Wrong password attempt','⚠️');}
 }
 
 async function showPage(page){
@@ -569,44 +658,23 @@ async function showPage(page){
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
   document.getElementById('nav-'+page).classList.add('active');
-  const renders={
-    dashboard:renderDashboard,results:renderResults,students:renderStudentsTable,
-    faces:renderFacesTable,fraud:renderFraud,logs:renderLogs,
-    candidates:()=>showCandSection(currentCandSection),countdown:renderCountdown
-  };
+  const renders={dashboard:renderDashboard,results:renderResults,students:renderStudentsTable,faces:renderFacesTable,fraud:renderFraud,logs:renderLogs,candidates:()=>showCandSection(currentCandSection),countdown:renderCountdown};
   if(renders[page]) await renders[page]();
 }
 
-// ── DASHBOARD ──
 async function renderDashboard(){
   settings=await loadSettings();
   const votes=await apiGet('/api/votes')||[];
   const fraud=await apiGet('/api/fraud')||[];
-  const alphaVotes=votes.filter(v=>v.section==='Alpha');
-  const betaVotes=votes.filter(v=>v.section==='Beta');
-
+  const av=votes.filter(v=>v.section==='Alpha').length;
+  const bv=votes.filter(v=>v.section==='Beta').length;
   document.getElementById('dash-stats').innerHTML=`
-    <div class="stat" style="--accent-line:var(--alpha);--accent-text:var(--alpha);">
-      <div class="stat-val">${alphaVotes.length}/${ALPHA_STUDENTS.length}</div><div class="stat-label">Alpha Votes</div>
-      <div class="progress-track" style="margin-top:0.6rem;"><div class="progress-fill" style="width:${Math.round(alphaVotes.length/ALPHA_STUDENTS.length*100)||0}%;background:var(--alpha);"></div></div>
-    </div>
-    <div class="stat" style="--accent-line:var(--beta);--accent-text:var(--beta);">
-      <div class="stat-val">${betaVotes.length}/${BETA_STUDENTS.length}</div><div class="stat-label">Beta Votes</div>
-      <div class="progress-track" style="margin-top:0.6rem;"><div class="progress-fill" style="width:${Math.round(betaVotes.length/BETA_STUDENTS.length*100)||0}%;background:var(--beta);"></div></div>
-    </div>
-    <div class="stat" style="--accent-line:var(--accent3);--accent-text:var(--accent3);">
-      <div class="stat-val">${votes.length}</div><div class="stat-label">Total Votes</div>
-    </div>
-    <div class="stat" style="--accent-line:var(--error);--accent-text:var(--error);">
-      <div class="stat-val">${fraud.length}</div><div class="stat-label">Fraud Alerts</div>
-    </div>
-    <div class="stat">
-      <div class="stat-val">${Math.round(votes.length/(ALPHA_STUDENTS.length+BETA_STUDENTS.length)*100)||0}%</div>
-      <div class="stat-label">Overall Turnout</div>
-    </div>
-    <div class="stat" style="--accent-line:var(--success);--accent-text:var(--success);">
-      <div class="stat-val" style="font-size:1.2rem;margin-top:0.2rem;">${(settings.electionState||'active').toUpperCase()}</div><div class="stat-label">Election Status</div>
-    </div>
+    <div class="stat" style="--accent-line:var(--alpha);--accent-text:var(--alpha);"><div class="stat-val">${av}/${ALPHA_STUDENTS.length}</div><div class="stat-label">Alpha Votes</div><div class="progress-track" style="margin-top:0.6rem;"><div class="progress-fill" style="width:${Math.round(av/ALPHA_STUDENTS.length*100)||0}%;background:var(--alpha);"></div></div></div>
+    <div class="stat" style="--accent-line:var(--beta);--accent-text:var(--beta);"><div class="stat-val">${bv}/${BETA_STUDENTS.length}</div><div class="stat-label">Beta Votes</div><div class="progress-track" style="margin-top:0.6rem;"><div class="progress-fill" style="width:${Math.round(bv/BETA_STUDENTS.length*100)||0}%;background:var(--beta);"></div></div></div>
+    <div class="stat" style="--accent-line:var(--accent3);--accent-text:var(--accent3);"><div class="stat-val">${votes.length}</div><div class="stat-label">Total Votes</div></div>
+    <div class="stat" style="--accent-line:var(--error);--accent-text:var(--error);"><div class="stat-val">${fraud.length}</div><div class="stat-label">Fraud Alerts</div></div>
+    <div class="stat"><div class="stat-val">${Math.round(votes.length/(ALPHA_STUDENTS.length+BETA_STUDENTS.length)*100)||0}%</div><div class="stat-label">Turnout</div></div>
+    <div class="stat" style="--accent-line:var(--success);--accent-text:var(--success);"><div class="stat-val" style="font-size:1.2rem;">${(settings.electionState||'active').toUpperCase()}</div><div class="stat-label">Status</div></div>
   `;
   await renderBarCharts('bar-alpha','Alpha');
   await renderBarCharts('bar-beta','Beta');
@@ -621,45 +689,18 @@ async function renderBarCharts(elId,section){
   const max=Math.max(1,...cands.map(c=>votes.filter(v=>v.candidateId===c.id).length));
   el.innerHTML=cands.map(c=>{
     const cnt=votes.filter(v=>v.candidateId===c.id).length;
-    const pct=Math.round(cnt/max*100);
-    return `<div class="bar-item">
-      <div class="bar-label">${c.name}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${c.color};"></div></div>
-      <div class="bar-count">${cnt}</div>
-    </div>`;
+    return `<div class="bar-item"><div class="bar-label">${c.name}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/max*100)}%;background:${c.color};"></div></div><div class="bar-count">${cnt}</div></div>`;
   }).join('');
 }
 
-// ── ELECTION CONTROL ──
-async function setElectionState(state){
-  settings=await loadSettings();
-  settings.electionState=state;
-  await saveSettings(settings);
-  updateHeaderStatus();
-  await logEvent('ELECTION_STATE_CHANGED',`State set to: ${state}`,'⚙️');
-  await renderCountdown();
-}
+async function setElectionState(state){settings=await loadSettings();settings.electionState=state;await saveSettings(settings);updateHeaderStatus();await logEvent('ELECTION_STATE_CHANGED',`State: ${state}`,'⚙️');await renderCountdown();}
 
 async function renderCountdown(){
   settings=await loadSettings();
   if(settings.schedStart) document.getElementById('sched-start').value=settings.schedStart;
   if(settings.schedEnd) document.getElementById('sched-end').value=settings.schedEnd;
-
   const tog=(id,val)=>{const el=document.getElementById(id);if(el)el.classList.toggle('on',!!val);};
-  tog('tog-lock',settings.resultsLocked);
-  tog('tog-reveal',settings.manualReveal);
-
-  clearInterval(window._cdTimer);
-  window._cdTimer=setInterval(()=>{
-    const end=settings.schedEnd;
-    const hEl=document.getElementById('cd-h'),mEl=document.getElementById('cd-m'),sEl=document.getElementById('cd-s');
-    if(!hEl) return;
-    if(!end){hEl.textContent=mEl.textContent=sEl.textContent='--';return;}
-    const diff=new Date(end)-new Date();
-    if(diff<=0){hEl.textContent=mEl.textContent=sEl.textContent='00';return;}
-    const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
-    hEl.textContent=String(h).padStart(2,'0');mEl.textContent=String(m).padStart(2,'0');sEl.textContent=String(s).padStart(2,'0');
-  },1000);
+  tog('tog-lock',settings.resultsLocked);tog('tog-reveal',settings.manualReveal);
 }
 
 function startCountdownTimer(){
@@ -683,7 +724,6 @@ async function saveSchedule(){
   await logEvent('SCHEDULE_SAVED',`Start:${settings.schedStart} End:${settings.schedEnd}`,'⏰');
 }
 
-// ── CANDIDATES ──
 function showCandSection(sec){
   currentCandSection=sec;
   document.getElementById('cand-section-title').textContent=`Section ${sec} Candidates`;
@@ -691,13 +731,8 @@ function showCandSection(sec){
   document.getElementById('cand-editor-list').innerHTML=cands.map(c=>`
     <div class="cand-editor">
       <div class="cand-editor-avatar" style="background:${c.bg};color:${c.color}">${c.name.charAt(0)}</div>
-      <div class="cand-editor-info">
-        <div class="cand-editor-name">${c.name}</div>
-        <div class="cand-editor-meta">${c.role} · Section ${sec}</div>
-      </div>
-      <div class="cand-editor-actions">
-        <button class="btn btn-danger btn-sm" onclick="removeCandidate('${sec}','${c.id}')">✕ Remove</button>
-      </div>
+      <div class="cand-editor-info"><div class="cand-editor-name">${c.name}</div><div class="cand-editor-meta">${c.role} · Section ${sec}</div></div>
+      <div class="cand-editor-actions"><button class="btn btn-danger btn-sm" onclick="removeCandidate('${sec}','${c.id}')">✕</button></div>
     </div>
   `).join('')||'<div class="table-empty">No candidates. Add below.</div>';
 }
@@ -709,8 +744,7 @@ async function addCandidate(){
   if(!name){alert('Enter candidate name');return;}
   const colors=['#7c6bff','#ff5f7e','#00e5c8','#ffc857'];
   const id=sec.charAt(0).toLowerCase()+Date.now();
-  const ci=(CANDIDATES[sec]||[]).length%colors.length;
-  const col=colors[ci];
+  const col=colors[(CANDIDATES[sec]||[]).length%colors.length];
   if(!CANDIDATES[sec]) CANDIDATES[sec]=[];
   CANDIDATES[sec].push({id,name,role,color:col,bg:col.replace(')',',0.15)').replace('rgb','rgba')});
   await apiPut('/api/candidates',CANDIDATES);
@@ -727,17 +761,14 @@ async function removeCandidate(sec,id){
   showCandSection(sec);
 }
 
-// ── RESULTS ──
 async function renderResults(){
   settings=await loadSettings();
   const locked=settings.resultsLocked&&settings.electionState!=='ended';
   document.getElementById('results-locked-msg').style.display=locked?'block':'none';
   document.getElementById('results-content').style.opacity=locked?'0.15':'1';
   if(locked) return;
-
   await renderBarCharts('results-bar-alpha','Alpha');
   await renderBarCharts('results-bar-beta','Beta');
-
   const votes=await apiGet('/api/votes')||[];
   ['Alpha','Beta'].forEach(sec=>{
     const sv=votes.filter(v=>v.section===sec);
@@ -748,9 +779,8 @@ async function renderResults(){
     el.style.display=winner?'flex':'none';
     if(winner) el.innerHTML=`🏆 Leading: <strong>${winner}</strong> with ${wc} votes`;
   });
-
   const table=document.getElementById('votes-table');
-  if(!votes.length){table.innerHTML='<div class="table-empty">No votes cast yet</div>';return;}
+  if(!votes.length){table.innerHTML='<div class="table-empty">No votes yet</div>';return;}
   table.innerHTML=votes.slice().reverse().map(v=>`
     <div class="table-row" style="grid-template-columns:1fr 1fr auto;">
       <div><span class="pill ${v.section.toLowerCase()}">${v.section}</span></div>
@@ -760,126 +790,84 @@ async function renderResults(){
   `).join('');
 }
 
-// ── STUDENTS ──
 async function renderStudentsTable(){
   const secFilter=document.getElementById('student-sec-filter').value;
   const search=document.getElementById('student-search').value.toLowerCase();
   const disabled=await apiGet('/api/disabled')||[];
   const votes=await apiGet('/api/votes')||[];
-  const allStudents=[
-    ...ALPHA_STUDENTS.map(s=>({...s,section:'Alpha'})),
-    ...BETA_STUDENTS.map(s=>({...s,section:'Beta'}))
-  ];
-  const filtered=allStudents.filter(s=>{
+  const all=[...ALPHA_STUDENTS.map(s=>({...s,section:'Alpha'})),...BETA_STUDENTS.map(s=>({...s,section:'Beta'}))];
+  const filtered=all.filter(s=>{
     const matchSec=secFilter==='all'||s.section===secFilter;
-    const matchSearch=!search||s.name.toLowerCase().includes(search)||s.roll.includes(search);
+    const matchSearch=!search||s.name.toLowerCase().includes(search)||s.phone.includes(search);
     return matchSec&&matchSearch;
   });
   const table=document.getElementById('students-table');
   if(!filtered.length){table.innerHTML='<div class="table-empty">No students found</div>';return;}
   table.innerHTML=filtered.map(s=>{
-    const isDisabled=disabled.includes(s.roll);
-    const hasVoted=votes.find(v=>v.roll===s.roll);
-    return `<div class="table-row" style="grid-template-columns:auto 1fr auto auto auto;">
-      <div style="font-size:0.72rem;color:var(--muted);">${s.roll}</div>
-      <div>${s.name}</div>
+    const ph=normalizePhone(s.phone);
+    const isDisabled=disabled.includes(ph);
+    const hasVoted=votes.find(v=>normalizePhone(v.phone)===ph);
+    return `<div class="table-row" style="grid-template-columns:1fr auto auto auto;">
+      <div>${s.name}<div style="font-size:0.68rem;color:var(--muted);">${s.phone||'—'}</div></div>
       <div><span class="pill ${s.section.toLowerCase()}">${s.section}</span></div>
       <div>${hasVoted?'<span class="pill success">Voted</span>':isDisabled?'<span class="pill danger">Disabled</span>':'<span class="pill muted">Pending</span>'}</div>
-      <div>
-        <button class="btn btn-ghost btn-sm" style="font-size:0.65rem;padding:0.3rem 0.6rem;"
-          onclick="${isDisabled?`enableVoter('${s.roll}')`:`disableVoter('${s.roll}')`}">
-          ${isDisabled?'Enable':'Disable'}
-        </button>
-      </div>
+      <div><button class="btn btn-ghost btn-sm" style="font-size:0.65rem;padding:0.3rem 0.6rem;" onclick="${isDisabled?`enableVoter('${ph}')`:`disableVoter('${ph}')`}">${isDisabled?'Enable':'Disable'}</button></div>
     </div>`;
   }).join('');
 }
 
-async function disableVoter(roll){
-  await apiPost('/api/disabled',{roll});
-  await logEvent('VOTER_DISABLED',`Roll: ${roll}`,'⛔');
-  renderStudentsTable();
-}
-async function enableVoter(roll){
-  await apiDelete('/api/disabled/'+roll);
-  await logEvent('VOTER_ENABLED',`Roll: ${roll}`,'✅');
-  renderStudentsTable();
-}
+async function disableVoter(phone){await apiPost('/api/disabled',{phone});await logEvent('VOTER_DISABLED',`Phone: [hidden]`,'⛔');renderStudentsTable();}
+async function enableVoter(phone){await apiDelete('/api/disabled/'+phone);await logEvent('VOTER_ENABLED',`Phone: [hidden]`,'✅');renderStudentsTable();}
 
-function importCSV(e){
-  const file=e.target.files[0];if(!file) return;
-  const reader=new FileReader();
-  reader.onload=async ev=>{
-    const lines=ev.target.result.split('\n').slice(1);
-    let count=0;
-    lines.forEach(line=>{const[roll,name,section]=line.split(',').map(s=>s.trim());if(roll&&name&&section)count++;});
-    alert(`Parsed ${count} students from CSV.`);
-    await logEvent('CSV_IMPORT',`${count} students imported`,'📥');
-  };
-  reader.readAsText(file);
-}
-
-// ── FACE DATA ──
 async function renderFacesTable(){
   const faces=await apiGet('/api/faces')||[];
   const allStudents=[...ALPHA_STUDENTS,...BETA_STUDENTS];
   const table=document.getElementById('faces-table');
   if(!faces.length){table.innerHTML='<div class="table-empty">No face data stored</div>';return;}
   table.innerHTML=faces.map(f=>{
-    const s=allStudents.find(st=>st.roll===f.roll);
-    const hasDescriptor=f.descriptor&&f.descriptor.length===128;
-    return `<div class="table-row" style="grid-template-columns:auto 1fr auto auto auto;">
-      <div style="font-size:0.72rem;color:var(--muted);">${f.roll}</div>
+    const s=allStudents.find(st=>normalizePhone(st.phone)===normalizePhone(f.phone||''));
+    const hasDesc=f.descriptor&&f.descriptor.length===128;
+    return `<div class="table-row" style="grid-template-columns:1fr auto auto auto;">
       <div>${s?s.name:'Unknown'}</div>
-      <div>${hasDescriptor?'<span class="pill success">128-d ✓</span>':'<span class="pill warning">legacy</span>'}</div>
+      <div>${hasDesc?'<span class="pill success">128-d ✓</span>':'<span class="pill warning">—</span>'}</div>
       <div style="font-size:0.68rem;color:var(--muted);">${new Date(f.capturedAt).toLocaleString()}</div>
-      <div><button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.3rem 0.6rem;" onclick="deleteFace('${f.roll}')">Delete</button></div>
+      <div><button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.3rem 0.6rem;" onclick="deleteFace('${f.phone}')">Delete</button></div>
     </div>`;
   }).join('');
 }
 
-async function deleteFace(roll){
-  // Delete single face — we delete all and re-post others
-  const faces=(await apiGet('/api/faces')||[]).filter(f=>f.roll!==roll);
+async function deleteFace(phone){
+  const faces=(await apiGet('/api/faces')||[]).filter(f=>f.phone!==phone);
   await apiDelete('/api/faces');
   for(const f of faces) await apiPost('/api/faces',f);
-  await logEvent('FACE_DELETED',`Roll: ${roll}`,'🗑️');
+  await logEvent('FACE_DELETED','Face data deleted','🗑️');
   renderFacesTable();
 }
-async function deleteAllFaces(){
-  if(!confirm('Delete ALL face data?')) return;
-  await apiDelete('/api/faces');
-  await logEvent('ALL_FACES_DELETED','All biometric data cleared','🗑️');
-  renderFacesTable();
-}
+async function deleteAllFaces(){if(!confirm('Delete ALL face data?'))return;await apiDelete('/api/faces');await logEvent('ALL_FACES_DELETED','All biometric data cleared','🗑️');renderFacesTable();}
 
-// ── FRAUD ──
-async function logFraud(type,name,roll,section,detail){
-  await apiPost('/api/fraud',{type,name,roll,section,detail,timestamp:new Date().toISOString()});
+async function logFraud(type,name,phone,section,detail){
+  await apiPost('/api/fraud',{type,name,phone,section,detail,timestamp:new Date().toISOString()});
   const fraud=await apiGet('/api/fraud')||[];
-  document.getElementById('fraud-badge').textContent=fraud.length;
+  const el=document.getElementById('fraud-badge');if(el)el.textContent=fraud.length;
 }
 
 async function renderFraud(){
   const fraud=await apiGet('/api/fraud')||[];
   const stats=document.getElementById('fraud-stats');
-  const dupeVotes=fraud.filter(f=>f.type==='DUPLICATE_VOTE_ATTEMPT').length;
-  const dupeFaces=fraud.filter(f=>f.type==='FACE_DUPLICATE').length;
-  const failedId=fraud.filter(f=>f.type==='FAILED_IDENTITY').length;
+  const dv=fraud.filter(f=>f.type==='DUPLICATE_VOTE_ATTEMPT').length;
+  const df=fraud.filter(f=>f.type==='FACE_DUPLICATE').length;
+  const fi=fraud.filter(f=>f.type==='FAILED_IDENTITY').length;
   stats.innerHTML=`
-    <div class="stat" style="--accent-line:var(--error);--accent-text:var(--error);"><div class="stat-val">${dupeVotes}</div><div class="stat-label">Duplicate Votes</div></div>
-    <div class="stat" style="--accent-line:var(--warning);--accent-text:var(--warning);"><div class="stat-val">${dupeFaces}</div><div class="stat-label">Face Duplicates</div></div>
-    <div class="stat"><div class="stat-val">${failedId}</div><div class="stat-label">Failed Identity</div></div>
+    <div class="stat" style="--accent-line:var(--error);--accent-text:var(--error);"><div class="stat-val">${dv}</div><div class="stat-label">Duplicate Votes</div></div>
+    <div class="stat" style="--accent-line:var(--warning);--accent-text:var(--warning);"><div class="stat-val">${df}</div><div class="stat-label">Face Duplicates</div></div>
+    <div class="stat"><div class="stat-val">${fi}</div><div class="stat-label">Failed Identity</div></div>
   `;
   const list=document.getElementById('fraud-list');
-  if(!fraud.length){list.innerHTML='<div class="table-empty">✅ No fraud attempts detected</div>';return;}
+  if(!fraud.length){list.innerHTML='<div class="table-empty">✅ No fraud attempts</div>';return;}
   list.innerHTML=`<div class="table-wrap">
-    <div class="table-head" style="grid-template-columns:1fr 1fr auto auto;">
-      <div>Student</div><div>Type</div><div>Section</div><div>Time</div>
-    </div>
+    <div class="table-head" style="grid-template-columns:1fr auto auto;"><div>Type</div><div>Section</div><div>Time</div></div>
     ${fraud.slice().reverse().map(f=>`
-      <div class="table-row" style="grid-template-columns:1fr 1fr auto auto;">
-        <div>${f.name}<div style="font-size:0.68rem;color:var(--muted);">${f.roll}</div></div>
+      <div class="table-row" style="grid-template-columns:1fr auto auto;">
         <div><span class="pill danger">${f.type}</span></div>
         <div><span class="pill ${(f.section||'').toLowerCase()}">${f.section||'—'}</span></div>
         <div style="font-size:0.68rem;color:var(--muted);">${new Date(f.timestamp).toLocaleTimeString()}</div>
@@ -888,10 +876,7 @@ async function renderFraud(){
   </div>`;
 }
 
-// ── LOGS ──
-async function logEvent(action,detail,icon='📝'){
-  await apiPost('/api/logs',{action,detail,icon,timestamp:new Date().toISOString()});
-}
+async function logEvent(action,detail,icon='📝'){await apiPost('/api/logs',{action,detail,icon,timestamp:new Date().toISOString()});}
 async function renderLogs(){
   const logs=(await apiGet('/api/logs')||[]).slice().reverse();
   const el=document.getElementById('activity-log');
@@ -907,12 +892,8 @@ async function renderLogs(){
     </div>
   `).join('');
 }
-async function clearLogs(){
-  await apiDelete('/api/logs');
-  renderLogs();
-}
+async function clearLogs(){await apiDelete('/api/logs');renderLogs();}
 
-// ── EXPORT ──
 async function exportCSV(type){
   let rows=[],header='';
   const votes=await apiGet('/api/votes')||[];
@@ -921,16 +902,16 @@ async function exportCSV(type){
   if(type==='full'){
     header='Vote ID,Section,Candidate,Timestamp\n';
     rows=votes.map(v=>`${v.voteId},${v.section},${v.candidateName},${v.timestamp}`);
-  } else if(type==='fraud'){
-    header='Type,Name,Roll,Section,Detail,Timestamp\n';
-    rows=fraud.map(f=>`${f.type},${f.name},${f.roll},${f.section||''},${f.detail},${f.timestamp}`);
-  } else if(type==='turnout'){
-    header='Section,Total Students,Votes Cast,Turnout %\n';
+  }else if(type==='fraud'){
+    header='Type,Section,Detail,Timestamp\n';
+    rows=fraud.map(f=>`${f.type},${f.section||''},${f.detail},${f.timestamp}`);
+  }else if(type==='turnout'){
+    header='Section,Total,Votes,Turnout%\n';
     const av=votes.filter(v=>v.section==='Alpha').length;
     const bv=votes.filter(v=>v.section==='Beta').length;
     rows=[`Alpha,${ALPHA_STUDENTS.length},${av},${Math.round(av/ALPHA_STUDENTS.length*100)}%`,
           `Beta,${BETA_STUDENTS.length},${bv},${Math.round(bv/BETA_STUDENTS.length*100)}%`];
-  } else if(type==='logs'){
+  }else if(type==='logs'){
     header='Action,Detail,Timestamp\n';
     rows=logs.map(l=>`${l.action},"${l.detail}",${l.timestamp}`);
   }
@@ -939,13 +920,9 @@ async function exportCSV(type){
   a.download=`cr_election_${type}_${Date.now()}.csv`;a.click();
 }
 
-// ── SETTINGS ──
 async function toggleSetting(key){
-  settings=await loadSettings();
-  settings[key]=!settings[key];
-  await saveSettings(settings);
-  const ids={resultsLocked:'tog-lock',manualReveal:'tog-reveal',faceDetection:'tog-face',
-    sessionTimeout:'tog-timeout',privacyNotice:'tog-privacy',autoDeleteFaces:'tog-autodel'};
+  settings=await loadSettings();settings[key]=!settings[key];await saveSettings(settings);
+  const ids={resultsLocked:'tog-lock',manualReveal:'tog-reveal',faceDetection:'tog-face',sessionTimeout:'tog-timeout',privacyNotice:'tog-privacy',autoDeleteFaces:'tog-autodel'};
   if(ids[key]) document.getElementById(ids[key])?.classList.toggle('on',settings[key]);
   await logEvent('SETTING_CHANGED',`${key} = ${settings[key]}`,'⚙️');
 }
@@ -958,22 +935,20 @@ async function changePass(){
   const ok=document.getElementById('pass-change-ok');
   err.textContent='';ok.style.display='none';
   if(hashStr(old)!==settings.adminPass){err.textContent='Current password incorrect';return;}
-  if(nw.length<6){err.textContent='Password must be at least 6 characters';return;}
-  settings.adminPass=hashStr(nw);
-  await saveSettings(settings);
+  if(nw.length<6){err.textContent='Min 6 characters';return;}
+  settings.adminPass=hashStr(nw);await saveSettings(settings);
   ok.style.display='flex';
   document.getElementById('old-pass').value='';document.getElementById('new-pass').value='';
   await logEvent('PASS_CHANGED','Admin password updated','🔑');
 }
 
 async function resetVotes(){
-  if(!confirm('Delete ALL votes? This is irreversible!')) return;
+  if(!confirm('Delete ALL votes? Irreversible!'))return;
   await apiDelete('/api/votes');
-  await logEvent('VOTES_RESET','All votes cleared by admin','⚠️');
+  await logEvent('VOTES_RESET','All votes cleared','⚠️');
   renderDashboard();
 }
 
-// ── MODAL ──
 function showModal(title,sub,onConfirm){
   document.getElementById('modal-title').textContent=title;
   document.getElementById('modal-sub').textContent=sub;
@@ -981,5 +956,3 @@ function showModal(title,sub,onConfirm){
   document.getElementById('confirm-modal').classList.add('open');
 }
 function closeModal(){document.getElementById('confirm-modal').classList.remove('open');}
-
-function delay(ms){return new Promise(r=>setTimeout(r,ms));}

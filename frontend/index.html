@@ -10,40 +10,36 @@
 </head>
 <body>
 
-<!-- ═══════════════ HEADER ═══════════════ -->
 <header>
-  <div class="logo">
-    <div class="logo-pulse"></div>
-    CR ELECTION 2025
-  </div>
+  <div class="logo"><div class="logo-pulse"></div>CR ELECTION 2025</div>
   <div class="header-right">
     <div class="election-status active" id="header-status">
-      <div class="status-dot blink"></div>
-      <span id="status-text">VOTING OPEN</span>
+      <div class="status-dot blink"></div><span id="status-text">VOTING OPEN</span>
     </div>
     <button class="admin-btn" onclick="openAdmin()">⚙ ADMIN</button>
   </div>
 </header>
 
-<!-- ═══════════════ VOTING APP ═══════════════ -->
 <div class="app">
-  <!-- STEPS -->
+  <!-- STEPS — now 6 -->
   <div class="steps">
     <div class="step-item"><div class="step-num active" id="s1">1</div><span class="step-label active">Section</span></div>
     <div class="step-conn" id="c1"></div>
     <div class="step-item"><div class="step-num" id="s2">2</div><span class="step-label">Identity</span></div>
     <div class="step-conn" id="c2"></div>
-    <div class="step-item"><div class="step-num" id="s3">3</div><span class="step-label">Face</span></div>
+    <div class="step-item"><div class="step-num" id="s3">3</div><span class="step-label">OTP</span></div>
     <div class="step-conn" id="c3"></div>
-    <div class="step-item"><div class="step-num" id="s4">4</div><span class="step-label">Vote</span></div>
+    <div class="step-item"><div class="step-num" id="s4">4</div><span class="step-label">Liveness</span></div>
     <div class="step-conn" id="c4"></div>
-    <div class="step-item"><div class="step-num" id="s5">5</div><span class="step-label">Done</span></div>
+    <div class="step-item"><div class="step-num" id="s5">5</div><span class="step-label">Vote</span></div>
+    <div class="step-conn" id="c5"></div>
+    <div class="step-item"><div class="step-num" id="s6">6</div><span class="step-label">Done</span></div>
   </div>
 
   <!-- STEP 1: SELECT SECTION -->
   <div class="card active" id="step1">
     <div class="card-title">Select Your Section</div>
-    <div class="card-sub">Choose your class section. Each section has its own candidates and election.</div>
+    <div class="card-sub">Choose your class section to begin voting.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.5rem;">
       <div class="cand-card" id="sec-alpha" onclick="selectSection('Alpha')" style="padding:2rem 1rem;">
         <div style="font-size:2.5rem;margin-bottom:0.8rem;">🔵</div>
@@ -58,10 +54,10 @@
     </div>
   </div>
 
-  <!-- STEP 2: IDENTITY -->
+  <!-- STEP 2: IDENTITY (Name + Phone) -->
   <div class="card" id="step2">
     <div class="card-title">Verify Identity</div>
-    <div class="card-sub">Enter your name and roll number exactly as registered in your section's database.</div>
+    <div class="card-sub">Enter your name and registered phone number.</div>
     <div class="section-badge alpha" id="section-indicator">● SECTION ALPHA</div>
     <div class="field">
       <label>Full Name</label>
@@ -69,35 +65,48 @@
       <div class="field-err" id="err-name"></div>
     </div>
     <div class="field">
-      <label>Roll Number</label>
-      <input type="text" id="inp-roll" placeholder="e.g. 250475" maxlength="8" autocomplete="off">
-      <div class="field-err" id="err-roll"></div>
+      <label>Phone Number</label>
+      <input type="tel" id="inp-phone" placeholder="e.g. 9984963428" maxlength="15" autocomplete="off">
+      <div class="field-err" id="err-phone"></div>
     </div>
     <div class="status info" id="db-status">🔐 <span id="db-count">Loading...</span> students registered in this section</div>
-    <button class="btn btn-primary" onclick="verifyIdentity()"><span>Verify & Continue</span><span>→</span></button>
+    <button class="btn btn-primary" onclick="verifyIdentity()"><span>Verify & Send OTP</span><span>→</span></button>
     <button class="btn btn-ghost" onclick="goToStep(1)" style="margin-top:0.5rem;">← Change Section</button>
   </div>
 
-  <!-- STEP 3: FACE SCAN -->
+  <!-- STEP 3: OTP VERIFICATION -->
   <div class="card" id="step3">
-    <div class="card-title">Face Verification</div>
-    <div class="card-sub">Position your face within the oval guide. Good lighting improves accuracy.</div>
+    <div class="card-title">WhatsApp OTP</div>
+    <div class="card-sub" id="otp-sub">Enter the 6-digit OTP sent to your WhatsApp.</div>
+    <div class="field">
+      <label>6-Digit OTP</label>
+      <input type="number" id="inp-otp" placeholder="• • • • • •" maxlength="6" style="font-size:1.5rem;letter-spacing:0.3em;text-align:center;" oninput="if(this.value.length>6)this.value=this.value.slice(0,6)">
+      <div class="field-err" id="err-otp"></div>
+    </div>
+    <div id="otp-timer" style="font-size:0.72rem;color:var(--muted2);text-align:center;margin-top:0.5rem;"></div>
+    <button class="btn btn-primary" onclick="verifyOTP()">Verify OTP →</button>
+    <button class="btn btn-ghost" id="resend-btn" onclick="resendOTP()" style="margin-top:0.5rem;" disabled>↺ Resend OTP</button>
+  </div>
+
+  <!-- STEP 4: LIVENESS (Blink Detection) -->
+  <div class="card" id="step4">
+    <div class="card-title">Liveness Check</div>
+    <div class="card-sub">Prove you're a real person — follow the on-screen instruction.</div>
     <div class="cam-wrap" id="cam-wrap">
       <video id="video" autoplay playsinline muted></video>
       <canvas id="canvas-preview"></canvas>
-      <div class="camera-overlay cam-overlay" id="cam-overlay"><div class="face-oval"></div></div>
-      <div class="cam-hint" id="cam-hint">Align face in the oval guide</div>
+      <div class="cam-overlay" id="cam-overlay"><div class="face-oval"></div></div>
+      <div class="cam-hint" id="cam-hint">Loading camera...</div>
     </div>
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="retakePhoto()">↺ Retake</button>
-      <button class="btn btn-primary" id="capture-btn" onclick="capturePhoto()" disabled>📷 Capture</button>
-    </div>
-    <div class="status info" id="face-status" style="display:none;"></div>
+    <!-- Liveness challenge box -->
+    <div id="liveness-challenge" class="status info" style="font-size:1rem;text-align:center;justify-content:center;display:none;"></div>
+    <div class="status info" id="face-status" style="display:none;margin-top:0.5rem;"></div>
     <button class="btn btn-primary" id="proceed-face-btn" onclick="proceedAfterFace()" style="display:none;">Continue →</button>
+    <button class="btn btn-ghost" onclick="retakePhoto()" style="margin-top:0.5rem;">↺ Retry</button>
   </div>
 
-  <!-- STEP 4: VOTE -->
-  <div class="card" id="step4">
+  <!-- STEP 5: VOTE -->
+  <div class="card" id="step5">
     <div class="card-title">Cast Your Vote</div>
     <div class="card-sub">Select your choice for Class Representative. This action is irreversible.</div>
     <div class="section-badge alpha" id="vote-section-badge">● SECTION ALPHA</div>
@@ -106,8 +115,8 @@
     <button class="btn btn-primary" id="submit-btn" onclick="submitVote()">🗳️ Submit My Vote</button>
   </div>
 
-  <!-- STEP 5: SUCCESS -->
-  <div class="card" id="step5">
+  <!-- STEP 6: SUCCESS -->
+  <div class="card" id="step6">
     <div class="success-wrap">
       <div class="success-icon">✓</div>
       <div class="success-title">Vote Recorded!</div>
@@ -118,11 +127,9 @@
   </div>
 </div>
 
-<!-- ═══════════════ ADMIN OVERLAY ═══════════════ -->
+<!-- ADMIN OVERLAY -->
 <div class="admin-overlay" id="admin-overlay">
   <div class="admin-shell">
-
-    <!-- SIDEBAR -->
     <div class="admin-sidebar" id="admin-sidebar" style="display:none;">
       <div class="admin-logo">ADMIN PANEL <span>COMPLETE AUTHORITY</span></div>
       <div class="admin-nav">
@@ -147,10 +154,7 @@
       </div>
     </div>
 
-    <!-- CONTENT -->
     <div class="admin-content" id="admin-content-area">
-
-      <!-- AUTH -->
       <div id="admin-auth">
         <div class="admin-auth-screen">
           <div style="font-size:2.5rem;margin-bottom:1rem;">🔐</div>
@@ -163,66 +167,44 @@
         </div>
       </div>
 
-      <!-- ─── DASHBOARD ─── -->
       <div class="admin-page" id="page-dashboard">
         <div class="page-title">Election Dashboard</div>
         <div class="page-sub">Real-time overview of both sections</div>
         <div class="stats-grid" id="dash-stats"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div>
-            <div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:0.8rem;display:flex;align-items:center;gap:0.5rem;"><span class="pill alpha">ALPHA</span> Results</div>
-            <div class="bar-chart" id="bar-alpha"></div>
-          </div>
-          <div>
-            <div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:0.8rem;display:flex;align-items:center;gap:0.5rem;"><span class="pill beta">BETA</span> Results</div>
-            <div class="bar-chart" id="bar-beta"></div>
-          </div>
+          <div><div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:0.8rem;display:flex;align-items:center;gap:0.5rem;"><span class="pill alpha">ALPHA</span> Results</div><div class="bar-chart" id="bar-alpha"></div></div>
+          <div><div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:0.8rem;display:flex;align-items:center;gap:0.5rem;"><span class="pill beta">BETA</span> Results</div><div class="bar-chart" id="bar-beta"></div></div>
         </div>
       </div>
 
-      <!-- ─── ELECTION CONTROL ─── -->
       <div class="admin-page" id="page-countdown">
         <div class="page-title">Election Control</div>
         <div class="page-sub">Control the full election lifecycle</div>
         <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
-          <div class="stat" style="--accent-line:var(--success);--accent-text:var(--success);cursor:pointer;" onclick="setElectionState('active')">
-            <div class="stat-val">▶</div><div class="stat-label">Start Election</div>
-          </div>
-          <div class="stat" style="--accent-line:var(--warning);--accent-text:var(--warning);cursor:pointer;" onclick="setElectionState('paused')">
-            <div class="stat-val">⏸</div><div class="stat-label">Pause Election</div>
-          </div>
-          <div class="stat" style="--accent-line:var(--error);--accent-text:var(--error);cursor:pointer;" onclick="setElectionState('ended')">
-            <div class="stat-val">⏹</div><div class="stat-label">End Election</div>
-          </div>
+          <div class="stat" style="--accent-line:var(--success);--accent-text:var(--success);cursor:pointer;" onclick="setElectionState('active')"><div class="stat-val">▶</div><div class="stat-label">Start</div></div>
+          <div class="stat" style="--accent-line:var(--warning);--accent-text:var(--warning);cursor:pointer;" onclick="setElectionState('paused')"><div class="stat-val">⏸</div><div class="stat-label">Pause</div></div>
+          <div class="stat" style="--accent-line:var(--error);--accent-text:var(--error);cursor:pointer;" onclick="setElectionState('ended')"><div class="stat-val">⏹</div><div class="stat-label">End</div></div>
         </div>
         <div class="time-card">
-          <div class="time-card-title">⏰ Schedule Election Window</div>
+          <div class="time-card-title">⏰ Schedule</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
-            <div><label>Start Date & Time</label><input type="datetime-local" id="sched-start"></div>
-            <div><label>End Date & Time</label><input type="datetime-local" id="sched-end"></div>
+            <div><label>Start</label><input type="datetime-local" id="sched-start"></div>
+            <div><label>End</label><input type="datetime-local" id="sched-end"></div>
           </div>
           <button class="btn btn-primary" onclick="saveSchedule()" style="max-width:200px;margin-top:1rem;">Save Schedule</button>
         </div>
-        <div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:0.8rem;">Time Remaining</div>
         <div class="countdown" id="countdown-display">
           <div class="cd-unit"><div class="cd-num" id="cd-h">--</div><div class="cd-label">Hours</div></div>
           <div class="cd-unit"><div class="cd-num" id="cd-m">--</div><div class="cd-label">Mins</div></div>
           <div class="cd-unit"><div class="cd-num" id="cd-s">--</div><div class="cd-label">Secs</div></div>
         </div>
-        <div class="toggle-row">
-          <div class="toggle-info">Lock results until election ends<small>Prevent admin from viewing results prematurely</small></div>
-          <div class="toggle on" id="tog-lock" onclick="toggleSetting('resultsLocked')"></div>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info">Reveal results manually<small>Admin reveals results with a button click after election ends</small></div>
-          <div class="toggle" id="tog-reveal" onclick="toggleSetting('manualReveal')"></div>
-        </div>
+        <div class="toggle-row"><div class="toggle-info">Lock results until ended<small>Prevent premature viewing</small></div><div class="toggle on" id="tog-lock" onclick="toggleSetting('resultsLocked')"></div></div>
+        <div class="toggle-row"><div class="toggle-info">Reveal results manually<small>Admin clicks to reveal after end</small></div><div class="toggle" id="tog-reveal" onclick="toggleSetting('manualReveal')"></div></div>
       </div>
 
-      <!-- ─── CANDIDATES ─── -->
       <div class="admin-page" id="page-candidates">
         <div class="page-title">Candidate Management</div>
-        <div class="page-sub">Add, edit, or remove candidates per section</div>
+        <div class="page-sub">Add or remove candidates per section</div>
         <div style="display:flex;gap:0.8rem;margin-bottom:1.2rem;">
           <span class="pill alpha" style="cursor:pointer;padding:0.4rem 1rem;" onclick="showCandSection('Alpha')">ALPHA</span>
           <span class="pill beta" style="cursor:pointer;padding:0.4rem 1rem;" onclick="showCandSection('Beta')">BETA</span>
@@ -230,23 +212,18 @@
         <div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:1rem;" id="cand-section-title">Section Alpha Candidates</div>
         <div id="cand-editor-list"></div>
         <div class="time-card" style="margin-top:1.5rem;">
-          <div class="time-card-title">➕ Add New Candidate</div>
-          <div class="field"><label>Candidate Name</label><input type="text" id="new-cand-name" placeholder="Full name"></div>
-          <div class="field"><label>Position / Tagline</label><input type="text" id="new-cand-pos" placeholder="e.g. CR Nominee"></div>
-          <div class="field"><label>Section</label>
-            <div class="select-wrap"><select id="new-cand-sec"><option>Alpha</option><option>Beta</option></select></div>
-          </div>
+          <div class="time-card-title">➕ Add Candidate</div>
+          <div class="field"><label>Name</label><input type="text" id="new-cand-name" placeholder="Full name"></div>
+          <div class="field"><label>Position</label><input type="text" id="new-cand-pos" placeholder="e.g. CR Nominee"></div>
+          <div class="field"><label>Section</label><div class="select-wrap"><select id="new-cand-sec"><option>Alpha</option><option>Beta</option></select></div></div>
           <button class="btn btn-primary" onclick="addCandidate()" style="max-width:200px;">Add Candidate</button>
         </div>
       </div>
 
-      <!-- ─── RESULTS ─── -->
       <div class="admin-page" id="page-results">
         <div class="page-title">Election Results</div>
-        <div class="page-sub">Section-wise vote counts and analytics</div>
-        <div id="results-locked-msg" style="display:none;">
-          <div class="status warning" style="margin-bottom:1.5rem;">🔒 Results are locked until election ends. Unlock in Election Control.</div>
-        </div>
+        <div class="page-sub">Section-wise vote counts</div>
+        <div id="results-locked-msg" style="display:none;"><div class="status warning" style="margin-bottom:1.5rem;">🔒 Results locked until election ends.</div></div>
         <div id="results-content">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
             <div>
@@ -260,73 +237,51 @@
               <div class="status success" id="beta-winner"></div>
             </div>
           </div>
-          <div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:0.8rem;">All Votes (Audit Trail)</div>
           <div class="table-wrap">
-            <div class="table-head" style="grid-template-columns:1fr 1fr auto;">
-              <div>Section</div><div>Voted For</div><div>Time</div>
-            </div>
+            <div class="table-head" style="grid-template-columns:1fr 1fr auto;"><div>Section</div><div>Voted For</div><div>Time</div></div>
             <div id="votes-table"></div>
           </div>
         </div>
       </div>
 
-      <!-- ─── STUDENTS ─── -->
       <div class="admin-page" id="page-students">
         <div class="page-title">Student Database</div>
         <div class="page-sub">View, enable, or disable eligible voters</div>
         <div class="page-actions">
           <div class="select-wrap" style="width:160px;"><select id="student-sec-filter" onchange="renderStudentsTable()"><option value="all">All Sections</option><option>Alpha</option><option>Beta</option></select></div>
-          <input type="text" id="student-search" placeholder="Search name or roll..." style="flex:1;margin:0;" oninput="renderStudentsTable()">
+          <input type="text" id="student-search" placeholder="Search name or phone..." style="flex:1;margin:0;" oninput="renderStudentsTable()">
         </div>
         <div class="table-wrap">
-          <div class="table-head" style="grid-template-columns:auto 1fr auto auto auto;">
-            <div>Roll</div><div>Name</div><div>Section</div><div>Status</div><div>Action</div>
-          </div>
+          <div class="table-head" style="grid-template-columns:1fr auto auto auto;"><div>Name</div><div>Section</div><div>Status</div><div>Action</div></div>
           <div id="students-table"></div>
-        </div>
-        <div style="margin-top:1.5rem;">
-          <div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:0.8rem;">📥 Bulk Import CSV</div>
-          <div class="status info">Upload a CSV with columns: roll,name,section</div>
-          <input type="file" id="csv-upload" accept=".csv" onchange="importCSV(event)" style="margin-top:0.8rem;color:var(--muted2);">
         </div>
       </div>
 
-      <!-- ─── FACE DATA ─── -->
       <div class="admin-page" id="page-faces">
         <div class="page-title">Face Data Management</div>
         <div class="page-sub">Biometric records — handle with care</div>
         <div class="page-actions">
-          <button class="btn btn-danger btn-sm" onclick="deleteAllFaces()">🗑 Delete All Face Data</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteAllFaces()">🗑 Delete All</button>
           <button class="btn btn-ghost btn-sm" onclick="renderFacesTable()">↺ Refresh</button>
         </div>
-        <div class="status warning">⚠️ Face data is used solely to prevent duplicate voting. Delete after the election for privacy compliance.</div>
+        <div class="status warning">⚠️ Delete face data after the election for privacy compliance.</div>
         <div class="table-wrap" style="margin-top:1rem;">
-          <div class="table-head" style="grid-template-columns:auto 1fr auto auto auto;">
-            <div>Roll</div><div>Name</div><div>Descriptor</div><div>Captured</div><div>Action</div>
-          </div>
+          <div class="table-head" style="grid-template-columns:1fr auto auto auto;"><div>Name</div><div>Descriptor</div><div>Captured</div><div>Action</div></div>
           <div id="faces-table"></div>
         </div>
-        <div style="margin-top:1rem;">
-          <div class="toggle-row">
-            <div class="toggle-info">Auto-delete face data when election ends<small>Recommended for privacy compliance</small></div>
-            <div class="toggle on" id="tog-autodel" onclick="toggleSetting('autoDeleteFaces')"></div>
-          </div>
-        </div>
+        <div class="toggle-row" style="margin-top:1rem;"><div class="toggle-info">Auto-delete faces when election ends<small>Recommended for privacy</small></div><div class="toggle on" id="tog-autodel" onclick="toggleSetting('autoDeleteFaces')"></div></div>
       </div>
 
-      <!-- ─── FRAUD ─── -->
       <div class="admin-page" id="page-fraud">
         <div class="page-title">Fraud Detection</div>
         <div class="page-sub">Security alerts and suspicious activity</div>
         <div class="stats-grid" id="fraud-stats"></div>
-        <div style="font-family:'Syne',sans-serif;font-weight:600;margin-bottom:0.8rem;">⚠ Suspicious Attempts</div>
-        <div id="fraud-list"><div class="table-empty">✅ No fraud attempts detected</div></div>
+        <div id="fraud-list"><div class="table-empty">✅ No fraud attempts</div></div>
       </div>
 
-      <!-- ─── LOGS ─── -->
       <div class="admin-page" id="page-logs">
         <div class="page-title">Activity Log</div>
-        <div class="page-sub">Complete audit trail of all system events</div>
+        <div class="page-sub">Complete audit trail</div>
         <div class="page-actions">
           <button class="btn btn-ghost btn-sm" onclick="renderLogs()">↺ Refresh</button>
           <button class="btn btn-danger btn-sm" onclick="if(confirm('Clear all logs?')){clearLogs();}">🗑 Clear Logs</button>
@@ -334,34 +289,20 @@
         <div id="activity-log"></div>
       </div>
 
-      <!-- ─── EXPORT ─── -->
       <div class="admin-page" id="page-export">
         <div class="page-title">Export & Reports</div>
-        <div class="page-sub">Download election data in various formats</div>
+        <div class="page-sub">Download election data</div>
         <div style="display:grid;gap:1rem;">
-          <div class="time-card" style="display:flex;align-items:center;justify-content:space-between;">
-            <div><div style="font-family:'Syne',sans-serif;font-weight:600;">📊 Full Results CSV</div><div style="font-size:0.72rem;color:var(--muted2);margin-top:0.3rem;">All votes with names, sections, timestamps</div></div>
-            <button class="btn btn-ghost btn-sm" onclick="exportCSV('full')">Download</button>
-          </div>
-          <div class="time-card" style="display:flex;align-items:center;justify-content:space-between;">
-            <div><div style="font-family:'Syne',sans-serif;font-weight:600;">🕵️ Fraud Report</div><div style="font-size:0.72rem;color:var(--muted2);margin-top:0.3rem;">All duplicate/fraud attempts log</div></div>
-            <button class="btn btn-ghost btn-sm" onclick="exportCSV('fraud')">Download</button>
-          </div>
-          <div class="time-card" style="display:flex;align-items:center;justify-content:space-between;">
-            <div><div style="font-family:'Syne',sans-serif;font-weight:600;">📈 Turnout Report</div><div style="font-size:0.72rem;color:var(--muted2);margin-top:0.3rem;">Voter participation by section</div></div>
-            <button class="btn btn-ghost btn-sm" onclick="exportCSV('turnout')">Download</button>
-          </div>
-          <div class="time-card" style="display:flex;align-items:center;justify-content:space-between;">
-            <div><div style="font-family:'Syne',sans-serif;font-weight:600;">📜 Activity Log CSV</div><div style="font-size:0.72rem;color:var(--muted2);margin-top:0.3rem;">Full system audit trail</div></div>
-            <button class="btn btn-ghost btn-sm" onclick="exportCSV('logs')">Download</button>
-          </div>
+          <div class="time-card" style="display:flex;align-items:center;justify-content:space-between;"><div><div style="font-family:'Syne',sans-serif;font-weight:600;">📊 Full Results CSV</div><div style="font-size:0.72rem;color:var(--muted2);">Anonymous vote counts</div></div><button class="btn btn-ghost btn-sm" onclick="exportCSV('full')">Download</button></div>
+          <div class="time-card" style="display:flex;align-items:center;justify-content:space-between;"><div><div style="font-family:'Syne',sans-serif;font-weight:600;">🕵️ Fraud Report</div><div style="font-size:0.72rem;color:var(--muted2);">Duplicate/fraud attempts</div></div><button class="btn btn-ghost btn-sm" onclick="exportCSV('fraud')">Download</button></div>
+          <div class="time-card" style="display:flex;align-items:center;justify-content:space-between;"><div><div style="font-family:'Syne',sans-serif;font-weight:600;">📈 Turnout Report</div><div style="font-size:0.72rem;color:var(--muted2);">Participation by section</div></div><button class="btn btn-ghost btn-sm" onclick="exportCSV('turnout')">Download</button></div>
+          <div class="time-card" style="display:flex;align-items:center;justify-content:space-between;"><div><div style="font-family:'Syne',sans-serif;font-weight:600;">📜 Activity Log CSV</div><div style="font-size:0.72rem;color:var(--muted2);">Full audit trail</div></div><button class="btn btn-ghost btn-sm" onclick="exportCSV('logs')">Download</button></div>
         </div>
       </div>
 
-      <!-- ─── SETTINGS ─── -->
       <div class="admin-page" id="page-settings">
         <div class="page-title">Settings & Security</div>
-        <div class="page-sub">System configuration and admin security</div>
+        <div class="page-sub">System configuration</div>
         <div class="time-card">
           <div class="time-card-title">🔑 Change Admin Password</div>
           <div class="field"><label>Current Password</label><input type="password" id="old-pass" placeholder="Current password"></div>
@@ -370,18 +311,9 @@
           <div class="field-err" id="pass-change-err" style="margin-top:0.6rem;"></div>
           <div class="status success" id="pass-change-ok" style="display:none;margin-top:0.6rem;">✅ Password updated</div>
         </div>
-        <div class="toggle-row">
-          <div class="toggle-info">Enable face duplicate detection<small>Compare face embeddings for all voters</small></div>
-          <div class="toggle on" id="tog-face" onclick="toggleSetting('faceDetection')"></div>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info">Session timeout (30 min)<small>Auto-logout admin after inactivity</small></div>
-          <div class="toggle on" id="tog-timeout" onclick="toggleSetting('sessionTimeout')"></div>
-        </div>
-        <div class="toggle-row">
-          <div class="toggle-info">Show privacy notice to voters<small>Display data usage notice before face scan</small></div>
-          <div class="toggle on" id="tog-privacy" onclick="toggleSetting('privacyNotice')"></div>
-        </div>
+        <div class="toggle-row"><div class="toggle-info">Enable face duplicate detection<small>Compare biometrics for all voters</small></div><div class="toggle on" id="tog-face" onclick="toggleSetting('faceDetection')"></div></div>
+        <div class="toggle-row"><div class="toggle-info">Session timeout (30 min)<small>Auto-logout admin after inactivity</small></div><div class="toggle on" id="tog-timeout" onclick="toggleSetting('sessionTimeout')"></div></div>
+        <div class="toggle-row"><div class="toggle-info">Show privacy notice<small>Display before face scan</small></div><div class="toggle on" id="tog-privacy" onclick="toggleSetting('privacyNotice')"></div></div>
         <div class="time-card" style="margin-top:1.5rem;">
           <div class="time-card-title" style="color:var(--error);">⚠ Danger Zone</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
@@ -390,12 +322,10 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
-    </div><!-- /admin-content-area -->
-  </div><!-- /admin-shell -->
-</div><!-- /admin-overlay -->
-
-<!-- CONFIRM MODAL -->
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal">
     <div class="modal-title" id="modal-title">Confirm Action</div>
