@@ -377,7 +377,6 @@ function startBlinkLivenessLoop(){
   if(liveDetectionLoop) return;
   const video = document.getElementById('video');
   blinkState = {completed:false};
-
   document.getElementById('liveness-challenge').style.display = 'none';
 
   let liveCanvas = document.getElementById('live-detect-canvas');
@@ -392,22 +391,25 @@ function startBlinkLivenessLoop(){
     if(!videoStream||!video.srcObject){stopLiveDetection();return;}
     if(video.readyState < 2) return;
 
+    // Lightweight detection — no descriptors needed just for the preview box
     const detection = await faceapi
       .detectSingleFace(video, new faceapi.SsdMobilenetv1Options({minConfidence:0.5}))
-      .withFaceLandmarks().withFaceDescriptors();
+      .withFaceLandmarks();
 
     liveCanvas.width = video.videoWidth;
     liveCanvas.height = video.videoHeight;
     const ctx = liveCanvas.getContext('2d');
     ctx.clearRect(0,0,liveCanvas.width,liveCanvas.height);
 
+    const btn = document.getElementById('capture-btn');
+
     if(!detection){
       document.getElementById('cam-hint').textContent = 'Align your face in the oval';
-      document.getElementById('capture-btn') && (document.getElementById('capture-btn').disabled = true);
+      if(btn) btn.disabled = true;
       return;
     }
 
-    // Draw green box around detected face
+    // Green box around face
     const W = liveCanvas.width;
     const box = detection.detection.box;
     const mx = W - box.x - box.width;
@@ -416,9 +418,7 @@ function startBlinkLivenessLoop(){
     ctx.strokeRect(mx, box.y, box.width, box.height);
 
     document.getElementById('cam-hint').textContent = '✓ Face detected — press Capture';
-    const btn = document.getElementById('capture-btn');
     if(btn) btn.disabled = false;
-
   }, 150);
 }
 
