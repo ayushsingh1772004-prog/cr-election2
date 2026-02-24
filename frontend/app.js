@@ -372,22 +372,13 @@ async function startCamera(){
   }
 }
 
-// ── Movement-Based Liveness ──
-// Tracks face center movement over time. A static photo won't move.
-// No landmarks, no EAR, no head turns — just raw face box movement.
-let livenessState = {positions:[], passed:false, frames:0};
-const MOVE_THRESHOLD = 8;   // pixels the face must move total
-const REQUIRED_FRAMES = 40; // ~6 seconds of detection
-
+// ── Face Detection Loop — shows green box, manual capture ──
 function startBlinkLivenessLoop(){
   if(liveDetectionLoop) return;
   const video = document.getElementById('video');
-  livenessState = {positions:[], passed:false, frames:0};
   blinkState = {completed:false};
 
-  const challengeEl = document.getElementById('liveness-challenge');
-  challengeEl.style.display = 'flex';
-  challengeEl.innerHTML = '👤 Liveness Check: <strong>Slowly nod your head yes</strong>';
+  document.getElementById('liveness-challenge').style.display = 'none';
 
   let liveCanvas = document.getElementById('live-detect-canvas');
   if(!liveCanvas){
@@ -399,7 +390,7 @@ function startBlinkLivenessLoop(){
 
   liveDetectionLoop = setInterval(async()=>{
     if(!videoStream||!video.srcObject){stopLiveDetection();return;}
-    if(video.readyState < 2 || blinkState.completed) return;
+    if(video.readyState < 2) return;
 
     const detection = await faceapi
       .detectSingleFace(video, new faceapi.SsdMobilenetv1Options({minConfidence:0.5}))
@@ -410,45 +401,42 @@ function startBlinkLivenessLoop(){
     const ctx = liveCanvas.getContext('2d');
     ctx.clearRect(0,0,liveCanvas.width,liveCanvas.height);
 
-    if(!detection){ document.getElementById('cam-hint').textContent='No face — move closer'; return; }
+    if(!detection){
+      document.getElementById('cam-hint').textContent = 'Align your face in the oval';
+      document.getElementById('capture-btn') && (document.getElementById('capture-btn').disabled = true);
+      return;
+    }
 
-    livenessState.frames++;
-    const box = detection.detection.box;
-    const cx = box.x + box.width/2;
-    const cy = box.y + box.height/2;
-    livenessState.positions.push({x:cx, y:cy});
-    if(livenessState.positions.length > 20) livenessState.positions.shift();
-
-    // Calculate total movement range
-    const xs = livenessState.positions.map(p=>p.x);
-    const ys = livenessState.positions.map(p=>p.y);
-    const rangeX = Math.max(...xs) - Math.min(...xs);
-    const rangeY = Math.max(...ys) - Math.min(...ys);
-    const movement = Math.max(rangeX, rangeY);
-
-    // Draw face box
+    // Draw green box around detected face
     const W = liveCanvas.width;
+    const box = detection.detection.box;
     const mx = W - box.x - box.width;
-    const pct = Math.min(100, Math.round(movement / MOVE_THRESHOLD * 100));
-    ctx.strokeStyle = movement >= MOVE_THRESHOLD ? '#00e5a0' : '#7c6bff';
-    ctx.lineWidth=2.5; ctx.shadowColor=ctx.strokeStyle; ctx.shadowBlur=10;
+    ctx.strokeStyle = '#00e5a0';
+    ctx.lineWidth = 2.5; ctx.shadowColor = '#00e5a0'; ctx.shadowBlur = 12;
     ctx.strokeRect(mx, box.y, box.width, box.height);
 
-    // Progress bar
-    const ch = document.getElementById('liveness-challenge');
-    const bar = '#'.repeat(Math.floor(pct/10)) + '░'.repeat(10-Math.floor(pct/10));
-    ch.innerHTML = movement >= MOVE_THRESHOLD
-      ? '✅ Movement detected! Hold still...'
-      : `👤 Nod or move slightly: [${bar}] ${pct}%`;
+    document.getElementById('cam-hint').textContent = '✓ Face detected — press Capture';
+    const btn = document.getElementById('capture-btn');
+    if(btn) btn.disabled = false;
 
-    if(movement >= MOVE_THRESHOLD && livenessState.frames >= 15){
-      blinkState.completed = true;
-      ch.innerHTML = '✅ Liveness confirmed!';
-      document.getElementById('cam-hint').textContent = '✓ Live person detected';
-      stopLiveDetection();
-      await captureAndProcess(detection);
-    }
   }, 150);
+}
+
+// Manual capture — triggered by Capture Photo button
+async function manualCapture(){
+  stopLiveDetection();
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas-preview');
+  const ctx = canvas.getContext('2d');
+  const w = video.videoWidth, h = video.videoHeight;
+  canvas.width=w; canvas.height=h;
+  ctx.save(); ctx.scale(-1,1); ctx.drawImage(video,-w,0,w,h); ctx.restore();
+  capturedImage = canvas.toDataURL('image/jpeg',0.92);
+  canvas.style.display='block'; video.style.display='none';
+  document.getElementById('cam-overlay').innerHTML='<div class="tick-overlay"><div class="tick-circle">✓</div></div>';
+  document.getElementById('capture-btn').style.display='none';
+  stopCamera();
+  await processFace(null);
 }
 
 // Called automatically after blink challenge passes
@@ -484,6 +472,7 @@ function retakePhoto(){
   document.getElementById('face-status').style.display='none';
   document.getElementById('proceed-face-btn').style.display='none';
   document.getElementById('liveness-challenge').style.display='none';
+  const cb=document.getElementById('capture-btn');if(cb){cb.style.display='block';cb.disabled=true;}
   setTimeout(()=>startCamera(),350);
 }
 

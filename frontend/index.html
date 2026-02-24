@@ -61,12 +61,12 @@
     <div class="section-badge alpha" id="section-indicator">● SECTION ALPHA</div>
     <div class="field">
       <label>Full Name</label>
-      <input type="text" id="inp-name" placeholder="e.g. AYUSH KUMAR SINGH" autocomplete="off">
+      <input type="text" id="inp-name" placeholder="e.g. SAURAV KUMAR" autocomplete="off">
       <div class="field-err" id="err-name"></div>
     </div>
     <div class="field">
       <label>Phone Number</label>
-      <input type="tel" id="inp-phone" placeholder="e.g. 9792037566" maxlength="15" autocomplete="off">
+      <input type="tel" id="inp-phone" placeholder="e.g. 9296362147" maxlength="15" autocomplete="off">
       <div class="field-err" id="err-phone"></div>
     </div>
     <div class="status info" id="db-status">🔐 <span id="db-count">Loading...</span> students registered in this section</div>
@@ -101,6 +101,7 @@
     <!-- Liveness challenge box -->
     <div id="liveness-challenge" class="status info" style="font-size:1rem;text-align:center;justify-content:center;display:none;"></div>
     <div class="status info" id="face-status" style="display:none;margin-top:0.5rem;"></div>
+    <button class="btn btn-primary" id="capture-btn" onclick="manualCapture()" disabled style="margin-top:0.5rem;">📸 Capture Photo</button>
     <button class="btn btn-primary" id="proceed-face-btn" onclick="proceedAfterFace()" style="display:none;">Continue →</button>
     <button class="btn btn-ghost" onclick="retakePhoto()" style="margin-top:0.5rem;">↺ Retry</button>
   </div>
