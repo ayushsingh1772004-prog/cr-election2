@@ -1,117 +1,117 @@
 const API = window.location.origin;
 
 // ════════════════════════════════════════════════════
-//  STUDENT DATA — updated from PDF, keyed by phone
-//  Each student: { name, phone, section }
+//  STUDENT DATA — { name, phone, email, section }
+//  Students are also stored server-side for admin edits
 // ════════════════════════════════════════════════════
-const ALPHA_STUDENTS = [
-  {name:"AARAV PATHAK",      phone:"9984963428"},
-  {name:"ADITYA MUKESH",     phone:"9507323450"},
-  {name:"ADITYA PATHAK",     phone:"7307338354"},
-  {name:"AKSHITA",           phone:"8375063031"},
-  {name:"AMAN KUMAR",        phone:"9334325841"},
-  {name:"ANJALI MISHRA",     phone:"6394413207"},
-  {name:"ANSHU RAJ BISOYI",  phone:"7788992348"},
-  {name:"ANUJ SONKAR",       phone:"8191987287"},
-  {name:"ANUSHKA SINGH",     phone:"7307850258"},
-  {name:"ARYAN SINGH",       phone:"9211328927"},
-  {name:"AYUSH KUMAR SINGH", phone:"9792037566"},
-  {name:"AYUSH PANDEY",      phone:"6392431225"},
-  {name:"BHAVESH PANDEY",    phone:"7465968293"},
-  {name:"DEPESH SIKARWAR",   phone:"8882649942"},
-  {name:"DEVASHISH",         phone:"7481063117"},
-  {name:"DIPESH SINGH",      phone:"9832824223"},
-  {name:"DIVYANSH GUPTA",    phone:"8447506537"},
-  {name:"EKANSH BANSAL",     phone:"9761179955"},
-  {name:"GAUTAM KUMAR",      phone:"8405020013"},
-  {name:"GOURAV",            phone:"9027181385"},
-  {name:"GURDEEP SINGH",     phone:"9873754054"},
-  {name:"HARSHITA",          phone:"9992938902"},
-  {name:"JAGJEET KUMAR",     phone:"7257044613"},
-  {name:"JIYA KAUSHIK",      phone:"8287693121"},
-  {name:"KIRAN SINHA",       phone:"6901147691"},
-  {name:"KUNAL PATEL",       phone:"9889529205"},
-  {name:"KUSHAGRA GOEL",     phone:"7303697477"},
-  {name:"MANIKESH KUMAR",    phone:"9905438708"},
-  {name:"MANSA BHATT",       phone:"9891761481"},
-  {name:"MAYANGLAMBAM LANCHENBA SINGH", phone:"9233938119"},
-  {name:"MAYANK RAJPUT",     phone:"8923256512"},
-  {name:"MOLLY ARORA",       phone:"7037836464"},
-  {name:"NIKHIL SINGH",      phone:"7985587641"},
-  {name:"PARTH SARTHI",      phone:"9229263192"},
-  {name:"PAWAN UNIYARA",     phone:"8982535643"},
-  {name:"PRAKHAR RAJ",       phone:"9263482241"},
-  {name:"REWAS KHATRI",      phone:"9635053235"},
-  {name:"RISHAV RAJ",        phone:"9204369955"},
-  {name:"SAGAR KUMAR",       phone:"7413967440"},
-  {name:"SAMAR KUMAR",       phone:"9142766509"},
-  {name:"SAROJ VISHWAKARMA", phone:"7869460977"},
-  {name:"SAURAV KUMAR",      phone:"9296362147"},
-  {name:"SHREE AADYA SHARMA",phone:"9540128484"},
-  {name:"SHUBHAM KUMAR",     phone:"8210251230"},
-  {name:"SIYA BHARDWAJ",     phone:"9315006462"},
-  {name:"SOFIYA",            phone:"9799383725"},
-  {name:"SURYANSH SETH",     phone:"9852219400"},
-  {name:"TANU SAINI",        phone:"7300986189"},
-  {name:"TEJAS DADHICH",     phone:"8238866201"},
-  {name:"UDIT AGARWAL",      phone:"7900259622"},
-  {name:"VIKASH KUMAR",      phone:"7065380035"},
-  {name:"YOGESH KR RUDRA",   phone:"9931646184"},
+let ALPHA_STUDENTS = [
+  {name:"AARAV PATHAK",      phone:"9984963428", email:"aaravpathak9984@gmail.com"},
+  {name:"ADITYA MUKESH",     phone:"9507323450", email:"adityamukesh111@gmail.com"},
+  {name:"ADITYA PATHAK",     phone:"7307338354", email:"adityapathak039@gmail.com"},
+  {name:"AKSHITA",           phone:"8375063031", email:"akshitasaini0947@gmail.com"},
+  {name:"AMAN KUMAR",        phone:"9334325841", email:"armnkumar321@gmail.com"},
+  {name:"ANJALI MISHRA",     phone:"6394413207", email:"anjali20607@gmail.com"},
+  {name:"ANSHU RAJ BISOYI",  phone:"7788992348", email:"anshurajbisoyi98@gmail.com"},
+  {name:"ANUJ SONKAR",       phone:"8191987287", email:"anujsonkar12bicbly@gmail.com"},
+  {name:"ANUSHKA SINGH",     phone:"7307850258", email:"anushkageetasingh@gmail.com"},
+  {name:"ARYAN SINGH",       phone:"9211328927", email:"aryansinghnea@gmail.com"},
+  {name:"AYUSH KUMAR SINGH", phone:"9792037566", email:""},
+  {name:"AYUSH PANDEY",      phone:"6392431225", email:"pandeybrand043@gmail.com"},
+  {name:"BHAVESH PANDEY",    phone:"7465968293", email:"bhaveshpandey563@gmail.com"},
+  {name:"DEPESH SIKARWAR",   phone:"8882649942", email:"sikarwardepesh07@gmail.com"},
+  {name:"DEVASHISH",         phone:"7481063117", email:"devashish10079@gmail.com"},
+  {name:"DIPESH SINGH",      phone:"9832824223", email:"dipeshnrsinghraj@gmail.com"},
+  {name:"DIVYANSH GUPTA",    phone:"8447506537", email:"divyanshvinu12@gmail.com"},
+  {name:"EKANSH BANSAL",     phone:"9761179955", email:"ekanshbannsal@gmail.com"},
+  {name:"GAUTAM KUMAR",      phone:"8405020013", email:"gautamkumar2020x@gmail.com"},
+  {name:"GOURAV",            phone:"9027181385", email:"souravgridhari2010@gmail.com"},
+  {name:"GURDEEP SINGH",     phone:"9873754054", email:"gurdeepslr80@gmail.com"},
+  {name:"HARSHITA",          phone:"9992938902", email:"hars4969@gmail.com"},
+  {name:"JAGJEET KUMAR",     phone:"7257044613", email:"jagjeetkumarmaurya121122@gmail.com"},
+  {name:"JIYA KAUSHIK",      phone:"8287693121", email:"pk1057591@gmail.com"},
+  {name:"KIRAN SINHA",       phone:"6901147691", email:"sinhakiran872@gmail.com"},
+  {name:"KUNAL PATEL",       phone:"9889529205", email:"kp931816@gmail.com"},
+  {name:"KUSHAGRA GOEL",     phone:"7303697477", email:"kushagragoelgg2006@gmail.com"},
+  {name:"MANIKESH KUMAR",    phone:"9905438708", email:"kumarmanikesh91@gmail.com"},
+  {name:"MANSA BHATT",       phone:"9891761481", email:"mansabhatt62587@gmail.com"},
+  {name:"MAYANGLAMBAM LANCHENBA SINGH", phone:"9233938119", email:"lanchenba2863@gmail.com"},
+  {name:"MAYANK RAJPUT",     phone:"8923256512", email:"r18mayank@gmail.com"},
+  {name:"MOLLY ARORA",       phone:"7037836464", email:"aroramolly54@gmail.com"},
+  {name:"NIKHIL SINGH",      phone:"7985587641", email:"thakurnikhilsingh7985@gmail.com"},
+  {name:"PARTH SARTHI",      phone:"9229263192", email:"sarthiparth2006@gmail.com"},
+  {name:"PAWAN UNIYARA",     phone:"8982535643", email:""},
+  {name:"PRAKHAR RAJ",       phone:"9263482241", email:"prakharraj006@gmail.com"},
+  {name:"REWAS KHATRI",      phone:"9635053235", email:"rewaskhatri02@gmail.com"},
+  {name:"RISHAV RAJ",        phone:"9204369955", email:"rishavraj.rr1234@gmail.com"},
+  {name:"SAGAR KUMAR",       phone:"7413967440", email:"sagar0206mahran@gmail.com"},
+  {name:"SAMAR KUMAR",       phone:"9142766509", email:"samarkumar4355@gmail.com"},
+  {name:"SAROJ VISHWAKARMA", phone:"7869460977", email:"saroj321r@gmail.com"},
+  {name:"SAURAV KUMAR",      phone:"9296362147", email:"krsauvi@gmail.com"},
+  {name:"SHREE AADYA SHARMA",phone:"9540128484", email:"shreeaadya04@gmail.com"},
+  {name:"SHUBHAM KUMAR",     phone:"8210251230", email:""},
+  {name:"SIYA BHARDWAJ",     phone:"9315006462", email:"siyab8160@gmail.com"},
+  {name:"SOFIYA",            phone:"9799383725", email:"sofiaali1521@gmail.com"},
+  {name:"SURYANSH SETH",     phone:"9852219400", email:"suryanshseth936@gmail.com"},
+  {name:"TANU SAINI",        phone:"7300986189", email:"saini16tanu@gmail.com"},
+  {name:"TEJAS DADHICH",     phone:"8238866201", email:"dadhichtejas653@gmail.com"},
+  {name:"UDIT AGARWAL",      phone:"7900259622", email:"uditagarwal220@gmail.com"},
+  {name:"VIKASH KUMAR",      phone:"7065380035", email:"vk2542883@gmail.com"},
+  {name:"YOGESH KR RUDRA",   phone:"9931646184", email:""},
 ];
 
-const BETA_STUDENTS = [
-  {name:"ABDUL KABIR KHAN",        phone:"9259620874"},
-  {name:"ABHINAY SINGH",           phone:"7208664261"},
-  {name:"AKSHAT PORWAL",           phone:"9407561796"},
-  {name:"ANAMIKA YADAV",           phone:"7376510150"},
-  {name:"ANAND KUMAR",             phone:"9472260086"},
-  {name:"ANCHAL KUMARI",           phone:"9608304995"},
-  {name:"ANSHIKA GUPTA",           phone:"6393163475"},
-  {name:"ARHAN DEV SINGH",         phone:"6201678194"},
-  {name:"ARNAV ARYA",              phone:"7764076583"},
-  {name:"AYUSH KUMAR",             phone:"8757709486"},
-  {name:"BIRAJ KS",                phone:"9494666834"},
-  {name:"CHANDRESHWAR NATH TRIPATHI", phone:"9621592827"},
-  {name:"CHETAN KUMAR VERMA",      phone:"9369219870"},
-  {name:"CHETAN SINGH",            phone:"6388435468"},
-  {name:"DEBOJIT DEY",             phone:"6388435468"},
-  {name:"DHRUV TOMAR",             phone:"9779503522"},
-  {name:"DIKSHA",                  phone:"7903404424"},
-  {name:"DIVYANKA",                phone:"9838947714"},
-  {name:"DIVYANSH AGARWAL",        phone:"7455837309"},
-  {name:"HARSH SURANA",            phone:"9251034399"},
-  {name:"HARSHIT RANJAN",          phone:"9798168389"},
-  {name:"HIMANSHU",                phone:"9467180570"},
-  {name:"KAVYA SRIVASTAVA",        phone:"9910901316"},
-  {name:"KUNAL VERMA",             phone:"7376284881"},
-  {name:"MEET DEY",                phone:"7638006820"},
-  {name:"NAMAN GOYAL",             phone:"9119022835"},
-  {name:"ONIK CHHATWAL",           phone:"8295074739"},
-  {name:"PALLAVI BHANDARI",        phone:"8126763890"},
-  {name:"PRANJAL SRIVASTAV",       phone:""},
-  {name:"PRINCE KUMAR",            phone:"9905352625"},
-  {name:"PRINCE MAHUR",            phone:"8218495197"},
-  {name:"PRIYANKA NEGI",           phone:"9286328134"},
-  {name:"PURNIMA RAJ",             phone:"9229557166"},
-  {name:"RAHIMUDDIN GEHLOT",       phone:"7742400699"},
-  {name:"RISHABH KUMAR TYAGI",     phone:"9999117796"},
-  {name:"RITU RAJ SINHA",          phone:"8178898404"},
-  {name:"SAFAK ALI",               phone:"6394524398"},
-  {name:"SAGAR KUMAR GUPTA",       phone:"7903213470"},
-  {name:"SAIF ULLAH JAFRI",        phone:"7388332488"},
-  {name:"SAPNA SINGH",             phone:"9234219225"},
-  {name:"SARITA",                  phone:"7668327057"},
-  {name:"SHIVAM KUMAR",            phone:"6372502234"},
-  {name:"SHREYA GUPTA",            phone:"8318138027"},
-  {name:"SHUBHAM GUPTA",           phone:"9118111575"},
-  {name:"SUBHASH KUMAR YADAV",     phone:"8955125916"},
-  {name:"SURYANSH CHAUHAN",        phone:"7302830604"},
-  {name:"SYED RYAN",               phone:""},
-  {name:"TUSHAR BHOJWANI",         phone:"8085409988"},
-  {name:"UJJWAL RAJ",              phone:"9395935191"},
-  {name:"UTKARSH PATWA",           phone:"6233897044"},
-  {name:"YARRAGORLA VAMSHI",       phone:"7995580027"},
-  {name:"YASH AGGARWAL",           phone:"6378793796"},
+let BETA_STUDENTS = [
+  {name:"ABDUL KABIR KHAN",        phone:"9259620874", email:"kingkabir327@gmail.com"},
+  {name:"ABHINAY SINGH",           phone:"7208664261", email:"abhinays00001@gmail.com"},
+  {name:"AKSHAT PORWAL",           phone:"9407561796", email:"akshatswn@gmail.com"},
+  {name:"ANAMIKA YADAV",           phone:"7376510150", email:"ady207074@gmail.com"},
+  {name:"ANAND KUMAR",             phone:"9472260086", email:"reddot000111@gmail.com"},
+  {name:"ANCHAL KUMARI",           phone:"9608304995", email:"sunnyanchal12345@gmail.com"},
+  {name:"ANSHIKA GUPTA",           phone:"6393163475", email:"ag6393163475@gmail.com"},
+  {name:"ARHAN DEV SINGH",         phone:"6201678194", email:"arhandevsingh17@gmail.com"},
+  {name:"ARNAV ARYA",              phone:"7764076583", email:"arnavarya2004@gmail.com"},
+  {name:"AYUSH KUMAR",             phone:"8757709486", email:"kumarayush08757@gmail.com"},
+  {name:"BIRAJ KS",                phone:"9494666834", email:"birajsasmal@gmail.com"},
+  {name:"CHANDRESHWAR NATH TRIPATHI", phone:"9621592827", email:"mmt03mayank@gmail.com"},
+  {name:"CHETAN KUMAR VERMA",      phone:"9369219870", email:"chetansoni1569@gmail.com"},
+  {name:"CHETAN SINGH",            phone:"6388435468", email:"karkichtn@gmail.com"},
+  {name:"DEBOJIT DEY",             phone:"6388435468", email:"debojitdey037@gmail.com"},
+  {name:"DHRUV TOMAR",             phone:"9779503522", email:""},
+  {name:"DIKSHA",                  phone:"7903404424", email:"dikshainspiring@gmail.com"},
+  {name:"DIVYANKA",                phone:"9838947714", email:"divyankadivya13@gmail.com"},
+  {name:"DIVYANSH AGARWAL",        phone:"7455837309", email:"dividivyansh28@gmail.com"},
+  {name:"HARSH SURANA",            phone:"9251034399", email:"harshsurana1809@gmail.com"},
+  {name:"HARSHIT RANJAN",          phone:"9798168389", email:"ara.harshitraj@gmail.com"},
+  {name:"HIMANSHU",                phone:"9467180570", email:"mitharwalhimanshu01@gmail.com"},
+  {name:"KAVYA SRIVASTAVA",        phone:"9910901316", email:"m25.kavya.srivastava@msot-hiet.org"},
+  {name:"KUNAL VERMA",             phone:"7376284881", email:"kv853772@gmail.com"},
+  {name:"MEET DEY",                phone:"7638006820", email:""},
+  {name:"NAMAN GOYAL",             phone:"9119022835", email:"namangoyal176@gmail.com"},
+  {name:"ONIK CHHATWAL",           phone:"8295074739", email:"onikchhatwal.123@mail.com"},
+  {name:"PALLAVI BHANDARI",        phone:"8126763890", email:"pallavibhandari072@gmail.com"},
+  {name:"PRANJAL SRIVASTAV",       phone:"",           email:""},
+  {name:"PRINCE KUMAR",            phone:"9905352625", email:""},
+  {name:"PRINCE MAHUR",            phone:"8218495197", email:""},
+  {name:"PRIYANKA NEGI",           phone:"9286328134", email:"priyankaviveknegi@gmail.com"},
+  {name:"PURNIMA RAJ",             phone:"9229557166", email:"purnimaraj864@gmail.com"},
+  {name:"RAHIMUDDIN GEHLOT",       phone:"7742400699", email:""},
+  {name:"RISHABH KUMAR TYAGI",     phone:"9999117796", email:"infotorishabh@gmail.com"},
+  {name:"RITU RAJ SINHA",          phone:"8178898404", email:""},
+  {name:"SAFAK ALI",               phone:"6394524398", email:"kjaid0341@gmail.com"},
+  {name:"SAGAR KUMAR GUPTA",       phone:"7903213470", email:"sg6259151@gmail.com"},
+  {name:"SAIF ULLAH JAFRI",        phone:"7388332488", email:"sjafri437@gmail.com"},
+  {name:"SAPNA SINGH",             phone:"9234219225", email:"singhsapna0228@gmail.com"},
+  {name:"SARITA",                  phone:"7668327057", email:"kumarisarita61722@gmail.com"},
+  {name:"SHIVAM KUMAR",            phone:"6372502234", email:"m25.shivam.kumar@msot-hiet.org"},
+  {name:"SHREYA GUPTA",            phone:"8318138027", email:"sg0128006@gmail.com"},
+  {name:"SHUBHAM GUPTA",           phone:"9118111575", email:"shubhamgupta9635@gmail.com"},
+  {name:"SUBHASH KUMAR YADAV",     phone:"8955125916", email:"subhashhkumarr1116@gmail.com"},
+  {name:"SURYANSH CHAUHAN",        phone:"7302830604", email:""},
+  {name:"SYED RYAN",               phone:"",           email:"syedryaaan@gmail.com"},
+  {name:"TUSHAR BHOJWANI",         phone:"8085409988", email:"tusharbhojwani.99@gmail.com"},
+  {name:"UJJWAL RAJ",              phone:"9395935191", email:"ujjwalraj1745@icloud.com"},
+  {name:"UTKARSH PATWA",           phone:"6233897044", email:"utkarshpatwa393@gmail.com"},
+  {name:"YARRAGORLA VAMSHI",       phone:"7995580027", email:""},
+  {name:"YASH AGGARWAL",           phone:"6378793796", email:"12yashagarwalhere@gmail.com"},
 ];
 
 let CANDIDATES = {
@@ -144,7 +144,7 @@ let capturedImage = null;
 let selectedCandidate = null;
 let videoStream = null;
 let currentCandSection = 'Alpha';
-let otpResendTimer = null;
+let firebaseConfirmationResult = null;
 const TOTAL_STEPS = 6;
 
 const DEFAULT_SETTINGS = {
@@ -152,6 +152,20 @@ const DEFAULT_SETTINGS = {
   faceDetection:true,sessionTimeout:true,privacyNotice:true,
   autoDeleteFaces:true,adminPass:hashStr('admin2025'),schedStart:'',schedEnd:''
 };
+
+// ════════════════════════════════════════════════════
+//  FIREBASE INIT
+//  Replace the config below with your Firebase project config
+// ════════════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey:            "REPLACE_WITH_YOUR_API_KEY",
+  authDomain:        "REPLACE_WITH_YOUR_AUTH_DOMAIN",
+  projectId:         "REPLACE_WITH_YOUR_PROJECT_ID",
+  appId:             "REPLACE_WITH_YOUR_APP_ID"
+};
+firebase.initializeApp(FIREBASE_CONFIG);
+const fbAuth = firebase.auth();
+fbAuth.languageCode = 'en';
 
 async function loadSettings(){const s=await apiGet('/api/settings');return s||DEFAULT_SETTINGS;}
 async function saveSettings(s){await apiPut('/api/settings',s);}
@@ -204,123 +218,157 @@ function selectSection(sec){
 }
 
 // ════════════════════════════════════════════════════
-//  STEP 2 — IDENTITY (Name + Phone)
+//  STEP 2 — IDENTITY
 // ════════════════════════════════════════════════════
 async function verifyIdentity(){
-  const nameVal=document.getElementById('inp-name').value.trim();
-  const phoneVal=normalizePhone(document.getElementById('inp-phone').value.trim());
-  document.getElementById('err-name').textContent='';
-  document.getElementById('err-phone').textContent='';
+  const nameVal = document.getElementById('inp-name').value.trim();
+  const otpMethod = document.querySelector('input[name="otp-method"]:checked')?.value || 'phone';
+  const contactVal = otpMethod === 'email'
+    ? document.getElementById('inp-email').value.trim().toLowerCase()
+    : normalizePhone(document.getElementById('inp-phone').value.trim());
+
+  document.getElementById('err-name').textContent = '';
+  document.getElementById('err-contact').textContent = '';
   document.getElementById('inp-name').classList.remove('err');
-  document.getElementById('inp-phone').classList.remove('err');
 
-  if(!nameVal){document.getElementById('err-name').textContent='Name required';document.getElementById('inp-name').classList.add('err');return;}
-  if(!phoneVal){document.getElementById('err-phone').textContent='Phone required';document.getElementById('inp-phone').classList.add('err');return;}
+  if(!nameVal){ document.getElementById('err-name').textContent='Name required'; document.getElementById('inp-name').classList.add('err'); return; }
+  if(!contactVal){ document.getElementById('err-contact').textContent = otpMethod==='email'?'Email required':'Phone required'; return; }
 
-  const students=getStudents(currentSection);
-  const student=students.find(s=>normName(s.name)===normName(nameVal) && normalizePhone(s.phone)===phoneVal);
-
-  if(!student){
-    const byPhone=students.find(s=>normalizePhone(s.phone)===phoneVal);
-    const byName=students.find(s=>normName(s.name)===normName(nameVal));
-    if(byPhone) document.getElementById('err-name').textContent=`This phone belongs to a different student — check your name`;
-    else if(byName) document.getElementById('err-phone').textContent=`Name found but phone doesn't match — check your phone number`;
-    else document.getElementById('err-name').textContent='Student not found in Section '+currentSection;
-    document.getElementById('inp-name').classList.add('err');
-    await logEvent('FAILED_IDENTITY',`Failed identity check — Section ${currentSection}`,'⚠️');
-    return;
+  const students = getStudents(currentSection);
+  let student;
+  if(otpMethod === 'email'){
+    student = students.find(s => normName(s.name)===normName(nameVal) && s.email && s.email.toLowerCase()===contactVal);
+    if(!student){
+      const byEmail = students.find(s=>s.email&&s.email.toLowerCase()===contactVal);
+      const byName  = students.find(s=>normName(s.name)===normName(nameVal));
+      if(byEmail) document.getElementById('err-name').textContent='This email belongs to a different student';
+      else if(byName && (!byName.email)) document.getElementById('err-contact').textContent='No email registered — use phone instead';
+      else if(byName) document.getElementById('err-contact').textContent="Email doesn't match — check again";
+      else document.getElementById('err-name').textContent='Student not found in Section '+currentSection;
+      await logEvent('FAILED_IDENTITY',`Failed identity check — Section ${currentSection}`,'⚠️');
+      return;
+    }
+  } else {
+    student = students.find(s=>normName(s.name)===normName(nameVal) && normalizePhone(s.phone)===contactVal);
+    if(!student){
+      const byPhone = students.find(s=>normalizePhone(s.phone)===contactVal);
+      const byName  = students.find(s=>normName(s.name)===normName(nameVal));
+      if(byPhone) document.getElementById('err-name').textContent='This phone belongs to a different student';
+      else if(byName) document.getElementById('err-contact').textContent="Phone doesn't match";
+      else document.getElementById('err-name').textContent='Student not found in Section '+currentSection;
+      await logEvent('FAILED_IDENTITY',`Failed identity check — Section ${currentSection}`,'⚠️');
+      return;
+    }
   }
 
-  if(!student.phone){
-    document.getElementById('err-phone').textContent='No phone number registered for this student. Contact admin.';
-    return;
-  }
+  if(otpMethod==='phone' && !student.phone){ document.getElementById('err-contact').textContent='No phone registered — use email instead'; return; }
+  if(otpMethod==='email' && !student.email){ document.getElementById('err-contact').textContent='No email registered — use phone instead'; return; }
 
-  const disabled=await apiGet('/api/disabled')||[];
-  if(disabled.includes(normalizePhone(student.phone))){
-    document.getElementById('err-phone').textContent='⛔ This voter has been disabled by admin.';return;
-  }
+  const disabled = await apiGet('/api/disabled')||[];
+  const pid = otpMethod==='email' ? student.email : normalizePhone(student.phone);
+  if(disabled.includes(pid)){ document.getElementById('err-contact').textContent='⛔ This voter has been disabled by admin.'; return; }
 
-  const checkResult=await apiGet('/api/votes/check/'+normalizePhone(student.phone));
+  const checkResult = await apiGet('/api/votes/check/'+encodeURIComponent(pid));
   if(checkResult&&checkResult.voted){
-    document.getElementById('err-phone').textContent='⛔ This student has already voted.';
+    document.getElementById('err-contact').textContent='⛔ This student has already voted.';
     await logFraud('DUPLICATE_VOTE_ATTEMPT','[hidden]','[hidden]',currentSection,'Identity step');
     return;
   }
 
-  currentStudent={...student,section:currentSection};
+  currentStudent = {...student, section:currentSection, otpMethod, contactId:pid};
 
-  // Send OTP
-  const sendBtn=document.querySelector('#step2 .btn-primary');
-  sendBtn.disabled=true;sendBtn.innerHTML='<div class="spin"></div> Sending OTP...';
+  const sendBtn = document.querySelector('#step2 .btn-primary');
+  sendBtn.disabled=true; sendBtn.innerHTML='<div class="spin"></div> Sending OTP...';
 
-  const result=await apiPost('/api/otp/send',{phone:normalizePhone(student.phone)});
-
-  sendBtn.disabled=false;sendBtn.innerHTML='<span>Verify & Send OTP</span><span>→</span>';
-
-  if(!result||result.error){
-    document.getElementById('err-phone').textContent='Failed to send OTP: '+(result?.error||'Server error');return;
+  try {
+    if(otpMethod === 'phone'){
+      if(!window.recaptchaVerifier){
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{size:'normal',callback:()=>{}});
+      }
+      const phoneWithCode = '+91' + normalizePhone(student.phone);
+      firebaseConfirmationResult = await fbAuth.signInWithPhoneNumber(phoneWithCode, window.recaptchaVerifier);
+      document.getElementById('otp-sub').textContent = `OTP sent via SMS to +91 ${student.phone.slice(-10)}`;
+    } else {
+      const result = await apiPost('/api/otp/email', {email: student.email});
+      if(!result||result.error){ document.getElementById('err-contact').textContent='Failed to send email OTP: '+(result?.error||'Server error'); return; }
+      document.getElementById('otp-sub').textContent = `OTP sent to ${student.email}`;
+    }
+    await logEvent('IDENTITY_VERIFIED',`Voter verified — Section ${currentSection}`,'✅');
+    goToStep(3);
+    startOTPTimer();
+  } catch(e){
+    console.error('OTP send error:', e);
+    document.getElementById('err-contact').textContent = 'Failed to send OTP: '+(e.message||'Try again');
+    if(window.recaptchaVerifier){ window.recaptchaVerifier.clear(); window.recaptchaVerifier=null; }
+  } finally {
+    sendBtn.disabled=false; sendBtn.innerHTML='<span>Verify & Send OTP</span><span>→</span>';
   }
-
-  await logEvent('IDENTITY_VERIFIED',`Voter verified — Section ${currentSection}`,'✅');
-
-  // Dev mode — show OTP on screen for testing
-  if(result.dev){
-    document.getElementById('otp-sub').textContent=`[DEV MODE] OTP: ${result.otp} (Twilio not configured)`;
-  } else {
-    document.getElementById('otp-sub').textContent=`A 6-digit OTP has been sent to your WhatsApp (+91 ${student.phone.slice(-10)}).`;
-  }
-
-  goToStep(3);
-  startOTPTimer();
 }
 
+
 // ════════════════════════════════════════════════════
-//  STEP 3 — OTP VERIFICATION
+//  STEP 3 — OTP VERIFICATION (Firebase)
 // ════════════════════════════════════════════════════
+let otpTimerInterval = null;
+
 function startOTPTimer(){
-  let secs=300; // 5 min
-  clearInterval(otpResendTimer);
+  let secs=60;
+  clearInterval(otpTimerInterval);
   document.getElementById('resend-btn').disabled=true;
-  otpResendTimer=setInterval(()=>{
+  otpTimerInterval=setInterval(()=>{
     secs--;
-    const m=Math.floor(secs/60),s=String(secs%60).padStart(2,'0');
-    document.getElementById('otp-timer').textContent=secs>0?`OTP expires in ${m}:${s}`:'OTP expired. Please resend.';
-    if(secs<=0){
-      clearInterval(otpResendTimer);
-      document.getElementById('resend-btn').disabled=false;
-    }
+    document.getElementById('otp-timer').textContent=secs>0?`Resend available in ${secs}s`:'You can now resend OTP';
+    if(secs<=0){ clearInterval(otpTimerInterval); document.getElementById('resend-btn').disabled=false; }
   },1000);
 }
 
 async function verifyOTP(){
-  const otpVal=document.getElementById('inp-otp').value.trim();
+  const otpVal = document.getElementById('inp-otp').value.trim();
   document.getElementById('err-otp').textContent='';
-  if(!otpVal||otpVal.length!==6){document.getElementById('err-otp').textContent='Enter the 6-digit OTP';return;}
+  if(!otpVal||otpVal.length!==6){ document.getElementById('err-otp').textContent='Enter the 6-digit OTP'; return; }
 
-  const btn=document.querySelector('#step3 .btn-primary');
-  btn.disabled=true;btn.innerHTML='<div class="spin"></div> Verifying...';
+  const btn = document.querySelector('#step3 .btn-primary');
+  btn.disabled=true; btn.innerHTML='<div class="spin"></div> Verifying...';
 
-  const result=await apiPost('/api/otp/verify',{phone:normalizePhone(currentStudent.phone),otp:otpVal});
-
-  btn.disabled=false;btn.innerHTML='Verify OTP →';
-
-  if(!result||result.error){
-    document.getElementById('err-otp').textContent=result?.error||'Verification failed';return;
+  try {
+    if(currentStudent.otpMethod === 'phone'){
+      if(!firebaseConfirmationResult){ document.getElementById('err-otp').textContent='Session expired. Go back.'; btn.disabled=false; btn.innerHTML='Verify OTP →'; return; }
+      await firebaseConfirmationResult.confirm(otpVal);
+    } else {
+      const result = await apiPost('/api/otp/email/verify', {email: currentStudent.email, otp: otpVal});
+      if(!result||result.error){ document.getElementById('err-otp').textContent=result?.error||'Incorrect OTP'; btn.disabled=false; btn.innerHTML='Verify OTP →'; return; }
+    }
+    clearInterval(otpTimerInterval);
+    await logEvent('OTP_VERIFIED',`OTP verified (${currentStudent.otpMethod}) — Section ${currentSection}`,'📱');
+    goToStep(4);
+    startCamera();
+  } catch(e){
+    document.getElementById('err-otp').textContent='Incorrect OTP. Please try again.';
+  } finally {
+    btn.disabled=false; btn.innerHTML='Verify OTP →';
   }
-
-  clearInterval(otpResendTimer);
-  await logEvent('OTP_VERIFIED',`OTP verified — Section ${currentSection}`,'📱');
-  goToStep(4);
-  startCamera();
 }
 
 async function resendOTP(){
-  const result=await apiPost('/api/otp/send',{phone:normalizePhone(currentStudent.phone)});
-  if(result&&result.dev) document.getElementById('otp-sub').textContent=`[DEV] New OTP: ${result.otp}`;
-  else document.getElementById('otp-sub').textContent='New OTP sent to your WhatsApp.';
   document.getElementById('inp-otp').value='';
-  startOTPTimer();
+  document.getElementById('err-otp').textContent='';
+  try {
+    if(currentStudent.otpMethod==='phone'){
+      if(window.recaptchaVerifier){ window.recaptchaVerifier.clear(); window.recaptchaVerifier=null; }
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container',{size:'normal',callback:()=>{}});
+      const phoneWithCode = '+91' + normalizePhone(currentStudent.phone);
+      firebaseConfirmationResult = await fbAuth.signInWithPhoneNumber(phoneWithCode, window.recaptchaVerifier);
+      document.getElementById('otp-sub').textContent='New OTP sent via SMS.';
+    } else {
+      const result = await apiPost('/api/otp/email',{email:currentStudent.email});
+      if(!result||result.error){ document.getElementById('err-otp').textContent='Failed: '+(result?.error||'error'); return; }
+      document.getElementById('otp-sub').textContent='New OTP sent to '+currentStudent.email;
+    }
+    startOTPTimer();
+  } catch(e){
+    document.getElementById('err-otp').textContent='Failed to resend: '+e.message;
+    if(window.recaptchaVerifier){ window.recaptchaVerifier.clear(); window.recaptchaVerifier=null; }
+  }
 }
 
 // ════════════════════════════════════════════════════
@@ -773,26 +821,107 @@ async function renderStudentsTable(){
   const all=[...ALPHA_STUDENTS.map(s=>({...s,section:'Alpha'})),...BETA_STUDENTS.map(s=>({...s,section:'Beta'}))];
   const filtered=all.filter(s=>{
     const matchSec=secFilter==='all'||s.section===secFilter;
-    const matchSearch=!search||s.name.toLowerCase().includes(search)||s.phone.includes(search);
+    const matchSearch=!search||s.name.toLowerCase().includes(search)||(s.phone||'').includes(search)||(s.email||'').toLowerCase().includes(search);
     return matchSec&&matchSearch;
   });
   const table=document.getElementById('students-table');
   if(!filtered.length){table.innerHTML='<div class="table-empty">No students found</div>';return;}
-  table.innerHTML=filtered.map(s=>{
-    const ph=normalizePhone(s.phone);
-    const isDisabled=disabled.includes(ph);
-    const hasVoted=votes.find(v=>normalizePhone(v.phone)===ph);
-    return `<div class="table-row" style="grid-template-columns:1fr auto auto auto;">
-      <div>${s.name}<div style="font-size:0.68rem;color:var(--muted);">${s.phone||'—'}</div></div>
-      <div><span class="pill ${s.section.toLowerCase()}">${s.section}</span></div>
+  table.innerHTML=filtered.map((s,i)=>{
+    const ph=normalizePhone(s.phone||'');
+    const cid=s.email||ph;
+    const isDisabled=disabled.includes(cid)||disabled.includes(ph);
+    const hasVoted=votes.find(v=>normalizePhone(v.phone||'')===ph||(v.email&&v.email===s.email));
+    const idx=all.findIndex(x=>x.name===s.name&&x.section===s.section);
+    return `<div class="table-row" style="grid-template-columns:1fr 1fr auto auto auto;">
+      <div><strong>${s.name}</strong><div style="font-size:0.65rem;color:var(--muted);">${s.phone||'—'}</div></div>
+      <div style="font-size:0.68rem;color:var(--muted2);">${s.email||'—'}<div><span class="pill ${s.section.toLowerCase()}">${s.section}</span></div></div>
       <div>${hasVoted?'<span class="pill success">Voted</span>':isDisabled?'<span class="pill danger">Disabled</span>':'<span class="pill muted">Pending</span>'}</div>
-      <div><button class="btn btn-ghost btn-sm" style="font-size:0.65rem;padding:0.3rem 0.6rem;" onclick="${isDisabled?`enableVoter('${ph}')`:`disableVoter('${ph}')`}">${isDisabled?'Enable':'Disable'}</button></div>
+      <div><button class="btn btn-ghost btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="openEditStudent(${idx})"">✏️</button></div>
+      <div style="display:flex;gap:4px;">
+        <button class="btn btn-ghost btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="${isDisabled?`enableVoter('${cid}')`:`disableVoter('${cid}')`}">${isDisabled?'Enable':'Disable'}</button>
+        <button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="removeStudent(${idx})">✕</button>
+      </div>
     </div>`;
   }).join('');
 }
 
-async function disableVoter(phone){await apiPost('/api/disabled',{phone});await logEvent('VOTER_DISABLED',`Phone: [hidden]`,'⛔');renderStudentsTable();}
-async function enableVoter(phone){await apiDelete('/api/disabled/'+phone);await logEvent('VOTER_ENABLED',`Phone: [hidden]`,'✅');renderStudentsTable();}
+async function disableVoter(id){await apiPost('/api/disabled',{phone:id});await logEvent('VOTER_DISABLED','Voter disabled','⛔');renderStudentsTable();}
+async function enableVoter(id){await apiDelete('/api/disabled/'+encodeURIComponent(id));await logEvent('VOTER_ENABLED','Voter enabled','✅');renderStudentsTable();}
+
+function getAllStudents(){
+  return [...ALPHA_STUDENTS.map(s=>({...s,section:'Alpha'})),...BETA_STUDENTS.map(s=>({...s,section:'Beta'}))];
+}
+
+function openAddStudent(){
+  document.getElementById('edit-student-modal').style.display='flex';
+  document.getElementById('edit-student-title').textContent='Add Student';
+  document.getElementById('stu-idx').value='';
+  document.getElementById('stu-name').value='';
+  document.getElementById('stu-phone').value='';
+  document.getElementById('stu-email').value='';
+  document.getElementById('stu-section').value='Alpha';
+}
+
+function openEditStudent(idx){
+  const all=getAllStudents();
+  const s=all[idx];
+  if(!s) return;
+  document.getElementById('edit-student-modal').style.display='flex';
+  document.getElementById('edit-student-title').textContent='Edit Student';
+  document.getElementById('stu-idx').value=idx;
+  document.getElementById('stu-name').value=s.name;
+  document.getElementById('stu-phone').value=s.phone||'';
+  document.getElementById('stu-email').value=s.email||'';
+  document.getElementById('stu-section').value=s.section;
+}
+
+function closeStudentModal(){document.getElementById('edit-student-modal').style.display='none';}
+
+function saveStudent(){
+  const idx=document.getElementById('stu-idx').value;
+  const name=document.getElementById('stu-name').value.trim().toUpperCase();
+  const phone=document.getElementById('stu-phone').value.trim();
+  const email=document.getElementById('stu-email').value.trim().toLowerCase();
+  const section=document.getElementById('stu-section').value;
+  if(!name){alert('Name required');return;}
+  const student={name,phone:normalizePhone(phone),email,section};
+  if(idx===''){
+    // Add new
+    if(section==='Alpha') ALPHA_STUDENTS.push(student);
+    else BETA_STUDENTS.push(student);
+  } else {
+    // Edit existing
+    const all=getAllStudents();
+    const old=all[parseInt(idx)];
+    const arr=old.section==='Alpha'?ALPHA_STUDENTS:BETA_STUDENTS;
+    const i=arr.findIndex(s=>s.name===old.name&&(s.phone||'')===(old.phone||''));
+    if(i>=0){
+      if(section!==old.section){
+        arr.splice(i,1);
+        if(section==='Alpha') ALPHA_STUDENTS.push(student);
+        else BETA_STUDENTS.push(student);
+      } else {
+        arr[i]={...arr[i],...student};
+      }
+    }
+  }
+  closeStudentModal();
+  renderStudentsTable();
+  document.getElementById('alpha-count').textContent=ALPHA_STUDENTS.length+' students';
+  document.getElementById('beta-count').textContent=BETA_STUDENTS.length+' students';
+  logEvent('STUDENT_UPDATED',`${name} — ${section}`,'👤');
+}
+
+function removeStudent(idx){
+  const all=getAllStudents();
+  const s=all[idx];
+  if(!s||!confirm(`Remove ${s.name} from ${s.section}?`)) return;
+  const arr=s.section==='Alpha'?ALPHA_STUDENTS:BETA_STUDENTS;
+  const i=arr.findIndex(x=>x.name===s.name&&(x.phone||'')===(s.phone||''));
+  if(i>=0) arr.splice(i,1);
+  renderStudentsTable();
+  logEvent('STUDENT_REMOVED',`${s.name} removed`,'🗑️');
+}
 
 async function renderFacesTable(){
   const faces=await apiGet('/api/faces')||[];
@@ -931,3 +1060,11 @@ function showModal(title,sub,onConfirm){
   document.getElementById('confirm-modal').classList.add('open');
 }
 function closeModal(){document.getElementById('confirm-modal').classList.remove('open');}
+
+// ── OTP Method Toggle ──
+function toggleOtpMethod(){
+  const method = document.querySelector('input[name="otp-method"]:checked')?.value || 'phone';
+  document.getElementById('phone-field').style.display = method==='phone'?'block':'none';
+  document.getElementById('email-field').style.display = method==='email'?'block':'none';
+  document.getElementById('err-contact').textContent='';
+}

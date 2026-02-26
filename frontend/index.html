@@ -6,6 +6,8 @@
 <title>CR Election 2025 — Secure Voting Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -57,18 +59,33 @@
   <!-- STEP 2: IDENTITY (Name + Phone) -->
   <div class="card" id="step2">
     <div class="card-title">Verify Identity</div>
-    <div class="card-sub">Enter your name and registered phone number.</div>
+    <div class="card-sub">Enter your name and choose how to receive your OTP.</div>
     <div class="section-badge alpha" id="section-indicator">● SECTION ALPHA</div>
     <div class="field">
       <label>Full Name</label>
-      <input type="text" id="inp-name" placeholder="e.g. SAURAV KUMAR" autocomplete="off">
+      <input type="text" id="inp-name" placeholder="e.g. JIYA KAUSHIK" autocomplete="off">
       <div class="field-err" id="err-name"></div>
     </div>
-    <div class="field">
-      <label>Phone Number</label>
-      <input type="tel" id="inp-phone" placeholder="e.g. 9296362147" maxlength="15" autocomplete="off">
-      <div class="field-err" id="err-phone"></div>
+    <div class="field" style="margin-bottom:0.5rem;">
+      <label>Receive OTP via</label>
+      <div style="display:flex;gap:1rem;margin-top:0.4rem;">
+        <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.88rem;">
+          <input type="radio" name="otp-method" value="phone" checked onchange="toggleOtpMethod()"> 📱 Phone (SMS)
+        </label>
+        <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.88rem;">
+          <input type="radio" name="otp-method" value="email" onchange="toggleOtpMethod()"> 📧 Email
+        </label>
+      </div>
     </div>
+    <div class="field" id="phone-field">
+      <label>Phone Number</label>
+      <input type="tel" id="inp-phone" placeholder="e.g. 9984963428" maxlength="15" autocomplete="off">
+    </div>
+    <div class="field" id="email-field" style="display:none;">
+      <label>Email Address</label>
+      <input type="email" id="inp-email" placeholder="e.g. name@gmail.com" autocomplete="off">
+    </div>
+    <div class="field-err" id="err-contact"></div>
     <div class="status info" id="db-status">🔐 <span id="db-count">Loading...</span> students registered in this section</div>
     <button class="btn btn-primary" onclick="verifyIdentity()"><span>Verify & Send OTP</span><span>→</span></button>
     <button class="btn btn-ghost" onclick="goToStep(1)" style="margin-top:0.5rem;">← Change Section</button>
@@ -76,9 +93,10 @@
 
   <!-- STEP 3: OTP VERIFICATION -->
   <div class="card" id="step3">
-    <div class="card-title">WhatsApp OTP</div>
-    <div class="card-sub" id="otp-sub">Enter the 6-digit OTP sent to your WhatsApp.</div>
+    <div class="card-title">OTP Verification</div>
+    <div class="card-sub" id="otp-sub">Sending your OTP...</div>
     <div class="field">
+      <div id="recaptcha-container" style="margin-bottom:1rem;display:flex;justify-content:center;"></div>
       <label>6-Digit OTP</label>
       <input type="number" id="inp-otp" placeholder="• • • • • •" maxlength="6" style="font-size:1.5rem;letter-spacing:0.3em;text-align:center;" oninput="if(this.value.length>6)this.value=this.value.slice(0,6)">
       <div class="field-err" id="err-otp"></div>
@@ -90,8 +108,8 @@
 
   <!-- STEP 4: LIVENESS (Blink Detection) -->
   <div class="card" id="step4">
-    <div class="card-title">Liveness Check</div>
-    <div class="card-sub">Prove you're a real person — follow the on-screen instruction.</div>
+    <div class="card-title">Face Scan</div>
+    <div class="card-sub">Position your face in the oval and press Capture when the green box appears.</div>
     <div class="cam-wrap" id="cam-wrap">
       <video id="video" autoplay playsinline muted></video>
       <canvas id="canvas-preview"></canvas>
@@ -247,14 +265,33 @@
 
       <div class="admin-page" id="page-students">
         <div class="page-title">Student Database</div>
-        <div class="page-sub">View, enable, or disable eligible voters</div>
+        <div class="page-sub">Add, edit, enable, or disable voters</div>
         <div class="page-actions">
-          <div class="select-wrap" style="width:160px;"><select id="student-sec-filter" onchange="renderStudentsTable()"><option value="all">All Sections</option><option>Alpha</option><option>Beta</option></select></div>
-          <input type="text" id="student-search" placeholder="Search name or phone..." style="flex:1;margin:0;" oninput="renderStudentsTable()">
+          <div class="select-wrap" style="width:140px;"><select id="student-sec-filter" onchange="renderStudentsTable()"><option value="all">All</option><option>Alpha</option><option>Beta</option></select></div>
+          <input type="text" id="student-search" placeholder="Search name, phone or email..." style="flex:1;margin:0;" oninput="renderStudentsTable()">
+          <button class="btn btn-primary btn-sm" onclick="openAddStudent()">+ Add Student</button>
         </div>
         <div class="table-wrap">
-          <div class="table-head" style="grid-template-columns:1fr auto auto auto;"><div>Name</div><div>Section</div><div>Status</div><div>Action</div></div>
+          <div class="table-head" style="grid-template-columns:1fr 1fr auto auto auto;"><div>Name / Phone</div><div>Email / Section</div><div>Status</div><div>Edit</div><div>Actions</div></div>
           <div id="students-table"></div>
+        </div>
+      </div>
+
+      <!-- Edit/Add Student Modal -->
+      <div id="edit-student-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;align-items:center;justify-content:center;">
+        <div class="card" style="width:min(420px,94vw);margin:0;max-height:90vh;overflow-y:auto;">
+          <div class="card-title" id="edit-student-title">Edit Student</div>
+          <input type="hidden" id="stu-idx">
+          <div class="field"><label>Full Name</label><input type="text" id="stu-name" placeholder="FULL NAME IN CAPS" autocomplete="off"></div>
+          <div class="field"><label>Phone Number</label><input type="tel" id="stu-phone" placeholder="10-digit number" autocomplete="off"></div>
+          <div class="field"><label>Email Address</label><input type="email" id="stu-email" placeholder="email@gmail.com" autocomplete="off"></div>
+          <div class="field"><label>Section</label>
+            <div class="select-wrap"><select id="stu-section"><option value="Alpha">Alpha</option><option value="Beta">Beta</option></select></div>
+          </div>
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+            <button class="btn btn-primary" style="flex:1;" onclick="saveStudent()">💾 Save</button>
+            <button class="btn btn-ghost" onclick="closeStudentModal()">Cancel</button>
+          </div>
         </div>
       </div>
 
