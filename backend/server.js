@@ -16,6 +16,7 @@ const FILES = {
   settings:   path.join(DATA_DIR, 'settings.json'),
   disabled:   path.join(DATA_DIR, 'disabled.json'),
   candidates: path.join(DATA_DIR, 'candidates.json'),
+  students:   path.join(DATA_DIR, 'students.json'),
 };
 
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -173,6 +174,23 @@ app.delete('/api/disabled/:id', (req, res) => {
 // ══════════════════════════════════════════
 app.get('/api/candidates', (req, res) => { const d=readJSON(FILES.candidates); res.json(Array.isArray(d)&&d.length===0?null:d); });
 app.put('/api/candidates', (req, res) => { writeJSON(FILES.candidates,req.body); res.json({success:true}); });
+
+
+// ══════════════════════════════════════════
+//  STUDENTS
+// ══════════════════════════════════════════
+app.get('/api/students', (req, res) => {
+  const d = readJSON(FILES.students);
+  // If empty, return null so frontend uses its built-in defaults
+  res.json(Array.isArray(d) && d.length === 0 ? null : d);
+});
+
+app.put('/api/students', (req, res) => {
+  const { alpha, beta } = req.body;
+  if (!alpha || !beta) return res.status(400).json({ error: 'Missing alpha or beta' });
+  writeJSON(FILES.students, { alpha, beta });
+  res.json({ success: true });
+});
 
 // ── CATCH-ALL ──
 app.get('*', (req, res) => res.sendFile(path.join(__dirname,'../frontend/index.html')));

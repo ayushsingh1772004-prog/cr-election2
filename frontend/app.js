@@ -168,6 +168,9 @@ const fbAuth = firebase.auth();
 fbAuth.languageCode = 'en';
 
 async function loadSettings(){const s=await apiGet('/api/settings');return s||DEFAULT_SETTINGS;}
+async function saveStudentsToServer(){
+  await apiPut('/api/students',{alpha:ALPHA_STUDENTS,beta:BETA_STUDENTS});
+}
 async function saveSettings(s){await apiPut('/api/settings',s);}
 function hashStr(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}return h.toString(16);}
 
@@ -175,13 +178,19 @@ function hashStr(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeA
 //  INIT
 // ════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async () => {
-  document.getElementById('alpha-count').textContent = ALPHA_STUDENTS.length + ' students';
-  document.getElementById('beta-count').textContent = BETA_STUDENTS.length + ' students';
   settings = await loadSettings();
   updateHeaderStatus();
   startCountdownTimer();
   const savedCands = await apiGet('/api/candidates');
   if(savedCands) CANDIDATES = savedCands;
+  // Load students from server (persists admin edits across refreshes)
+  const savedStudents = await apiGet('/api/students');
+  if(savedStudents && savedStudents.alpha && savedStudents.beta){
+    ALPHA_STUDENTS = savedStudents.alpha;
+    BETA_STUDENTS  = savedStudents.beta;
+  }
+  document.getElementById('alpha-count').textContent = ALPHA_STUDENTS.length + ' students';
+  document.getElementById('beta-count').textContent  = BETA_STUDENTS.length  + ' students';
 });
 
 function getStudents(sec){ return sec==='Alpha' ? ALPHA_STUDENTS : BETA_STUDENTS; }
@@ -877,7 +886,7 @@ function openEditStudent(idx){
 
 function closeStudentModal(){document.getElementById('edit-student-modal').style.display='none';}
 
-function saveStudent(){
+async function saveStudent(){
   const idx=document.getElementById('stu-idx').value;
   const name=document.getElementById('stu-name').value.trim().toUpperCase();
   const phone=document.getElementById('stu-phone').value.trim();
@@ -906,20 +915,24 @@ function saveStudent(){
     }
   }
   closeStudentModal();
+  await saveStudentsToServer();
   renderStudentsTable();
   document.getElementById('alpha-count').textContent=ALPHA_STUDENTS.length+' students';
   document.getElementById('beta-count').textContent=BETA_STUDENTS.length+' students';
   logEvent('STUDENT_UPDATED',`${name} — ${section}`,'👤');
 }
 
-function removeStudent(idx){
+async function removeStudent(idx){
   const all=getAllStudents();
   const s=all[idx];
   if(!s||!confirm(`Remove ${s.name} from ${s.section}?`)) return;
   const arr=s.section==='Alpha'?ALPHA_STUDENTS:BETA_STUDENTS;
   const i=arr.findIndex(x=>x.name===s.name&&(x.phone||'')===(s.phone||''));
   if(i>=0) arr.splice(i,1);
+  await saveStudentsToServer();
   renderStudentsTable();
+  document.getElementById('alpha-count').textContent=ALPHA_STUDENTS.length+' students';
+  document.getElementById('beta-count').textContent=BETA_STUDENTS.length+' students';
   logEvent('STUDENT_REMOVED',`${s.name} removed`,'🗑️');
 }
 
