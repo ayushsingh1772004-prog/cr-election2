@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,14 +24,8 @@ Object.values(FILES).forEach(f => { if (!fs.existsSync(f)) fs.writeFileSync(f, '
 // ── Email OTP store (in-memory)
 const emailOtpStore = {};
 
-// ── Gmail transporter using App Password
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'ayushsingh1772004@gmail.com',
-    pass: 'aaus fkku crzx lyoz'   // Gmail App Password
-  }
-});
+// ── Resend email client (works on Render free tier)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 function readJSON(file) { try { return JSON.parse(fs.readFileSync(file,'utf8')); } catch { return []; } }
 function writeJSON(file, data) { fs.writeFileSync(file, JSON.stringify(data, null, 2)); }
@@ -51,8 +45,8 @@ app.post('/api/otp/email', async (req, res) => {
   const otp = generateOTP();
   emailOtpStore[email.toLowerCase()] = { otp, expiresAt: Date.now() + 10*60*1000 };
   try {
-    await transporter.sendMail({
-      from: '"CR Election 2025" <ayushsingh1772004@gmail.com>',
+    await resend.emails.send({
+      from: 'CR Election 2025 <onboarding@resend.dev>',
       to: email,
       subject: 'Your CR Election OTP',
       html: `
@@ -66,7 +60,7 @@ app.post('/api/otp/email', async (req, res) => {
     });
     res.json({ success: true });
   } catch(e) {
-    console.error('Email OTP error:', e.message);
+    console.error('Email OTP error:', e?.message || e);
     res.status(500).json({ error: 'Failed to send email: ' + e.message });
   }
 });
