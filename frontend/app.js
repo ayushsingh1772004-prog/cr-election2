@@ -836,7 +836,7 @@ async function renderStudentsTable(){
       <div><strong>${s.name}</strong><div style="font-size:0.65rem;color:var(--muted);">${s.phone||'—'}</div></div>
       <div style="font-size:0.68rem;color:var(--muted2);">${s.email||'—'}<div><span class="pill ${s.section.toLowerCase()}">${s.section}</span></div></div>
       <div>${hasVoted?'<span class="pill success">Voted</span>':isDisabled?'<span class="pill danger">Disabled</span>':'<span class="pill muted">Pending</span>'}</div>
-      <div><button class="btn btn-ghost btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="openEditStudent(${idx})"">✏️</button></div>
+      <div><button class="btn btn-ghost btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="openEditStudent(${idx})">✏️</button></div>
       <div style="display:flex;gap:4px;">
         <button class="btn btn-ghost btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="${isDisabled?`enableVoter('${cid}')`:`disableVoter('${cid}')`}">${isDisabled?'Enable':'Disable'}</button>
         <button class="btn btn-danger btn-sm" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="removeStudent(${idx})">✕</button>
